@@ -1,2 +1,2 @@
 # VuePoint
-Student Group Project
+Student Group Project using Python, Flask and Vue.js
