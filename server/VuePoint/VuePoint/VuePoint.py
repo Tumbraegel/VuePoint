@@ -1,4 +1,5 @@
 # Adapted from http://flask.pocoo.org/docs/0.12/tutorial/
+# to initialize a new db run 'flask initdb' in terminal
 # all the imports
 import os
 import sqlite3
@@ -10,12 +11,12 @@ app.config.from_object(__name__) # load config from this file , vuepoint.py
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, 'flaskr.db'),
+    DATABASE=os.path.join(app.root_path, 'vuePoint.db'),
     SECRET_KEY='development key',
     USERNAME='admin',
     PASSWORD='default'
 ))
-app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+app.config.from_envvar('VUEPOINT_SETTINGS', silent=True)
 
 def connect_db():
     """Connects to the specific database."""
@@ -50,17 +51,17 @@ def close_db(error):
         g.sqlite_db.close()
 
 @app.route('/')
-def show_entries():
+def show_all_tasks():
     db = get_db()
-    cur = db.execute('select title, text from entries order by id desc')
-    entries = cur.fetchall()
-    return render_template('show_entries.html', entries=entries)
+    cur = db.execute('select title, taskDescription, dueDate from tasks order by id desc')
+    tasks = cur.fetchall()
+    return render_template('show_all_tasks.html', tasks=tasks)
 
 @app.route('/add', methods=['POST'])
-def add_entry():
+def add_task():
     db = get_db()
-    db.execute('insert into entries (title, text) values (?, ?)',
-                 [request.form['title'], request.form['text']])
+    db.execute('insert into tasks (title, taskDescription, dueDate) values (?, ?, ?)',
+                 [request.form['title'], request.form['taskDescription'], request.form['dueDate']])
     db.commit()
-    flash('New entry was successfully posted')
-    return redirect(url_for('show_entries'))
+    flash('New task was successfully posted')
+    return redirect(url_for('show_all_tasks'))

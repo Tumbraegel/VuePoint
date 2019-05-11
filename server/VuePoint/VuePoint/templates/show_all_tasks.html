@@ -1,0 +1,22 @@
+<!--Adapted from http://flask.pocoo.org/docs/0.12/tutorial/-->
+{% extends "layout.html" %}
+{% block body %}
+    <form action="{{ url_for('add_task') }}" method=post class=add-task>
+      <dl>
+        <dt>Title:
+        <dd><input type=text size=30 name=title>
+        <dt>Text:
+        <dd><textarea name=taskDescription rows=5 cols=40></textarea>
+        <dt>Due Date:</dt>
+        <dd><input type="date" name="dueDate"></dd>
+        <dd><input type=submit value=Share>
+      </dl>
+    </form>
+  <ul class=tasks>
+  {% for task in tasks %}
+    <li><h2>{{ task.title }}</h2>{{ task.taskDescription|safe }}{{task.dueDate}}
+  {% else %}
+    <li><em>Unbelievable.  No task here so far</em>
+  {% endfor %}
+  </ul>
+{% endblock %}
