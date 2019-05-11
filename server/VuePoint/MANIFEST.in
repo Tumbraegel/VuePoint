@@ -1,0 +1,3 @@
+graft VuePoint/templates
+graft VuePoint/static
+include VuePoint/schema.sql

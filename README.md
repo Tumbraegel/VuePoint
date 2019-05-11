@@ -21,6 +21,11 @@ For Windows:
     $ conda activate envName
     (env)$ conda install --file requirements.txt
     (env)$ python app.py
+    (env)$ cd VuePoint
+    (env)$ pip install --editable .
+    (env)$ export FLASK_APP=VuePoint (Windows use set instead of export)
+    (env)$ export FLASK_DEBUG=true
+    (env)$ flask run
     ```
 
 > http://localhost:5000
