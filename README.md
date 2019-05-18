@@ -15,17 +15,23 @@ For Windows:
 
 2. Server-side Flask app in another terminal:
 
+    Install server env
     ```sh
     $ cd server
     $ conda create --name envName
     $ conda activate envName
     (env)$ conda install --file requirements.txt
-    (env)$ python app.py
-    (env)$ cd VuePoint
-    (env)$ pip install --editable .
-    (env)$ export FLASK_APP=VuePoint (Windows use set instead of export)
-    (env)$ export FLASK_DEBUG=true
-    (env)$ flask run
+    ```
+    Run the server
+    For windows, run the commands seperately and use set instead of export
+    ```sh
+    cd VuePoint
+    pip install --editable . && export FLASK_APP=VuePoint && export FLASK_DEBUG=true && flask run
+    ```
+
+    Initialize Database
+    ```sh
+    flask initdb
     ```
 
 > http://localhost:5000

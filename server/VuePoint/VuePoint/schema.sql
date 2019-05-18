@@ -4,5 +4,6 @@ create TABLE tasks(
   id INTEGER PRIMARY KEY autoincrement,
   title text not null,
   taskDescription text,
-  dueDate date not null
+  dueDate date not null DEFAULT CURRENT_DATE,
+  taskState INTEGER not null
 );
