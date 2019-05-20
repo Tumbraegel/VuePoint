@@ -18,6 +18,18 @@
 </transition>
 </template>
 
+<script>
+export default {
+  name: 'Modal',
+
+  methods: {
+    close() {
+      this.$emit('close');
+    },
+  },
+};
+</script>
+
 <style>
 .modal-mask {
   position: fixed;
@@ -31,15 +43,3 @@
   transition: opacity .3s ease;
 }
 </style>
-
-<script>
-export default {
-  name: 'modal',
-
-  methods: {
-    close() {
-      this.$emit('close');
-    },
-  },
-};
-</script>

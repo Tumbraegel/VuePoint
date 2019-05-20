@@ -1,13 +1,9 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-10">
-        <h1>VuePoint</h1>
-        <hr><br><br>
-        <button type="button" class="btn btn-success btn-sm" @click="openAddModal()">
-          Add Task
-        </button>
-        <br><br>
+  <div>
+    <b-button variant="outline-success" size="sm" @click="openAddModal()">Add Task</b-button>
+    <b-button variant="outline-warning" size="sm">Work</b-button>
+    <b-button variant="outline-warning" size="sm">Personal</b-button>
+    <br><br>
 
         <!--ADD TASK MODAL-->
         <div id="wrapper" class="container">
@@ -49,59 +45,11 @@
           </modal>
         </div>
 
-        <br>
-        <button type="button" class="btn btn-warning btn-sm">Update</button>
-        <button type="button" class="btn btn-danger btn-sm">Delete</button>
-      </div>
+      <br>
+      <b-button variant="outline-info" size="sm">Update</b-button>
+      <b-button variant="outline-danger" size="sm">Delete</b-button>
     </div>
-  </div>
 </template>
-
-<style>
-.weekday-table {
-  display: table;
-  width: 115%;
-  table-layout: fixed;
-}
-
-.weekday-header {
-  color: seagreen;
-}
-
-.task {
-  display: inline-block;
-  font-size: 14px;
-  list-style: none;
-  text-align: center;
-  padding: 0px;
-  margin: 0px;
-}
-
-#task:hover, task:focus, task:active{
-  background: rgb(51, 153, 95, 0.9);
-  color: rgb(233, 233, 233);
-  cursor: pointer;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
-}
-
-.weekday {
-  font-size: 14px;
-  display: table-cell;
-  border: 1px solid seagreen;
-  margin: 2px;
-  padding: 5px;
-  vertical-align: top;
-  text-align: center;
-  }
-
-.btn-success {
-  background-color: seagreen;
-}
-
-.btn-success:hover {
-  background-color:rgb(38, 115, 71);
-}
-</style>
 
 <script>
 import Modal from './Modal';
@@ -117,20 +65,23 @@ export default {
         date: 'Friday',
         description: 'Buy Cookies',
         importance: 'high',
+        state: 'complete',
       },
       {
         id: '2',
-        title: 'Meeting',
+        title: 'Ticket #25',
         date: 'Tuesday',
-        description: 'with Jacob from HR',
+        description: 'Needs to be done ASAP',
         importance: 'high',
+        state: 'incomplete',
       },
       {
         id: '3',
-        title: 'Coffee Date',
+        title: 'Grocery Shopping',
         date: 'Weekend',
-        description: '@Starbucks',
+        description: '@fancy supermarket',
         importance: 'low',
+        state: 'incomplete',
       },
       {
         id: '4',
@@ -138,6 +89,7 @@ export default {
         date: 'Wednesday',
         description: 'To-Do: Tickets #73, #75, #79',
         importance: 'high',
+        state: 'incomplete',
       },
       {
         id: '5',
@@ -145,6 +97,7 @@ export default {
         date: 'Wednesday',
         description: 'Having an existential crisis',
         important: 'high',
+        state: 'incomplete',
       }],
       showAddModal: false,
       showEditModal: false,
@@ -181,3 +134,41 @@ export default {
   },
 };
 </script>
+
+<style>
+.weekday-table {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.weekday-header {
+  color: seagreen;
+}
+
+.task {
+  display: inline-block;
+  font-size: 14px;
+  list-style: none;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+}
+
+#task:hover, task:focus, task:active{
+  background: rgb(51, 153, 95, 0.9);
+  color: rgb(233, 233, 233);
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+}
+
+.weekday {
+  font-size: 14px;
+  display: table-cell;
+  border: 1px solid seagreen;
+  margin: 2px;
+  padding: 5px;
+  vertical-align: top;
+  text-align: center;
+  }
+</style>
