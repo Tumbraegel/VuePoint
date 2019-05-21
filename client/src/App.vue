@@ -1,5 +1,5 @@
 <template>
-  <b-container id="app">
+  <b-container fluid id="app">
     <b-row>
       <b-col>
         <navbar/>
@@ -23,3 +23,15 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+* {
+  box-sizing: border-box;
+}
+
+.container-fluid {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+</style>

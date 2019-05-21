@@ -18,16 +18,18 @@
           </modal>
         </div>
 
-        <div class="weekday-table">
-          <li class="weekday" v-for="day in days" :key="day">
-            <h2 class="weekday-header">{{ day }}</h2>
-            <ul class="task">
-              <li id="task" v-for="task in getTasks(day)" :key="task.id" @click="openEditModal()">
-                <strong>{{ task.title }}</strong>
-                <div>{{ task.description }}</div>
-              </li>
-            </ul>
-          </li>
+        <div class="container weekday-table">
+          <div class="row">
+            <div class="col-sm weekday" v-for="day in days" :key="day">
+              <h2 class="weekday-header">{{ day }}</h2>
+              <ul class="task">
+                <li id="task" v-for="task in getTasks(day)" :key="task.id" @click="openEditModal()">
+                  <strong>{{ task.title }}</strong>
+                  <div>{{ task.description }}</div>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <!--EDIT TASK MODAL-->
@@ -140,6 +142,10 @@ export default {
   display: table;
   width: 100%;
   table-layout: fixed;
+}
+
+h2 {
+  font-size: 3vh;
 }
 
 .weekday-header {
