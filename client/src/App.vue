@@ -1,17 +1,37 @@
 <template>
-  <div id="app">
-    <router-view/>
-  </div>
+  <b-container fluid id="app">
+    <b-row>
+      <b-col>
+        <navbar/>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col>
+        <router-view/>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
+import Navbar from './components/NavBar';
+
 export default {
   name: 'App',
+  components: {
+    Navbar,
+  },
 };
 </script>
 
-<style>
-#app {
-  margin-top: 50px
+<style scoped>
+* {
+  box-sizing: border-box;
 }
+
+.container-fluid {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
 </style>
