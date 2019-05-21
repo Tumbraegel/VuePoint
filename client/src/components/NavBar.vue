@@ -1,5 +1,5 @@
 <template>
-<div>
+<b-container fluid>
   <b-navbar toggleable="lg" type="dark" variant="dark">
     <b-navbar-brand :to="{ name: 'Home' }">VuePoint</b-navbar-brand>
 
@@ -22,7 +22,7 @@
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
-</div>
+</b-container>
 </template>
 
 <script>
@@ -30,3 +30,14 @@ export default {
   name: 'Navbar',
 };
 </script>
+
+<style scoped>
+.navbar {
+  background-color: rgb(51, 153, 95, 0.9) !important;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border-color: white;
+}
+</style>
