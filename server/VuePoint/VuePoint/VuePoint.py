@@ -9,9 +9,15 @@ from  flask_wtf  import  Form
 from  wtforms  import  StringField
 from wtforms import DateField
 from  wtforms.validators  import  DataRequired
+from  sqlalchemy  import  create_engine
+from  sqlalchemy.orm  import  sessionmaker
 
 app = Flask(__name__) # create the application instance :)
 app.config.from_object(__name__) # load config from this file , vuepoint.py
+
+engine = create_engine('sqlite:///vuePoint.db')
+Session = sessionmaker(bind=engine)
+session = Session()
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
