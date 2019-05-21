@@ -11,6 +11,8 @@ from wtforms import DateField
 from  wtforms.validators  import  DataRequired
 from  sqlalchemy  import  create_engine
 from  sqlalchemy.orm  import  sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Integer, Column, String, Date
 
 app = Flask(__name__) # create the application instance :)
 app.config.from_object(__name__) # load config from this file , vuepoint.py
@@ -60,11 +62,21 @@ def close_db(error):
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
 
+Base  = declarative_base()
+
+class Task(Base):
+    __tablename__ = 'task'
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
+    taskDescription = Column(String)
+    dueDate = Column(Date)
+    taskState = Column(Integer)
+
+Base.metadata.create_all(engine)
+
 @app.route('/')
 def show_all_tasks():
-    db = get_db()
-    cur = db.execute('select title, taskDescription, dueDate from tasks order by id desc')
-    tasks = cur.fetchall()
+    tasks = session.query(Task).all()
     form = WTPostForm()
     return render_template('show_all_tasks.html', tasks=tasks, form=form)
 
@@ -72,18 +84,12 @@ def show_all_tasks():
 def add_task():
     form = WTPostForm()
     if form.validate ():
-        task = {
-            'title': form.data['title'],
-            'taskDescription': form.data['taskDescription'],
-            'dueDate': form.data['dueDate']
-            }
+        new_task = Task(title=form.data['title'], taskDescription=form.data['taskDescription'], dueDate=form.data['dueDate'], taskState=0)
+        session.add(new_task)
+        session.commit()
     else:
         for  err in form.errors.items():
-            flash(str(err))    
-    db = get_db()
-    db.execute('insert into tasks (title, taskDescription, dueDate, taskState) values (?, ?, ?, 0)',
-                 [task['title'], task['taskDescription'], task['dueDate']])
-    db.commit()
+            flash(str(err))
     flash('New task was successfully posted')
     return redirect(url_for('show_all_tasks'))
 
