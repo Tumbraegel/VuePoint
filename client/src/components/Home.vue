@@ -8,8 +8,8 @@
 
     <b-row class="row-margin">
       <b-col>
-        <done/>
         <p>SECTION FOR COMPLETED TASKS</p>
+        <done/>
       </b-col>
     </b-row>
 

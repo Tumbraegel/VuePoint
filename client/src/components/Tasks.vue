@@ -1,8 +1,18 @@
 <template>
   <div>
-    <b-button variant="outline-success" size="sm" @click="openAddModal()">Add Task</b-button>
-    <b-button variant="outline-warning" size="sm">Work</b-button>
-    <b-button variant="outline-warning" size="sm">Personal</b-button>
+    <b-button variant="outline-success" size="sm" @click="openAddModal()">
+      Add Task
+    </b-button>
+    <b-button variant="outline-warning" size="sm" @click="setWorkTaskboard('work')">
+      Work
+    </b-button>
+    <b-button variant="outline-warning" size="sm" @click="setWorkTaskboard('personal')">
+      Personal
+    </b-button>
+    <b-button v-if="!showAllTasks" variant="outline-warning" size="sm"
+    @click="setWorkTaskboard('all')">
+    All
+    </b-button>
     <br><br>
 
         <!--ADD TASK MODAL-->
@@ -23,7 +33,8 @@
             <div class="col-sm weekday" v-for="day in days" :key="day">
               <h2 class="weekday-header">{{ day }}</h2>
               <ul class="task">
-                <li id="task" v-for="task in getTasks(day)" :key="task.id" @click="openEditModal()">
+                <li id="task" v-for="task in getCorrectTaskboard(day)" :key="task.id"
+                @click="openEditModal()">
                   <strong>{{ task.title }}</strong>
                   <div>{{ task.description }}</div>
                 </li>
@@ -66,6 +77,7 @@ export default {
         title: 'Office Party',
         date: 'Friday',
         description: 'Buy Cookies',
+        flag: 'work',
         importance: 'high',
         state: 'complete',
       },
@@ -74,6 +86,7 @@ export default {
         title: 'Ticket #25',
         date: 'Tuesday',
         description: 'Needs to be done ASAP',
+        flag: 'work',
         importance: 'high',
         state: 'incomplete',
       },
@@ -82,6 +95,7 @@ export default {
         title: 'Grocery Shopping',
         date: 'Weekend',
         description: '@fancy supermarket',
+        flag: 'personal',
         importance: 'low',
         state: 'incomplete',
       },
@@ -90,6 +104,7 @@ export default {
         title: 'Sprint 34 Deadline',
         date: 'Wednesday',
         description: 'To-Do: Tickets #73, #75, #79',
+        flag: 'work',
         importance: 'high',
         state: 'incomplete',
       },
@@ -98,11 +113,15 @@ export default {
         title: 'Sprint Review',
         date: 'Wednesday',
         description: 'Having an existential crisis',
+        flag: 'work',
         important: 'high',
         state: 'incomplete',
       }],
       showAddModal: false,
       showEditModal: false,
+      showAllTasks: true,
+      showWorkTasks: false,
+      showPersonalTasks: false,
     };
   },
 
@@ -111,14 +130,62 @@ export default {
   },
 
   computed: {
-    localTasks() {
+    allTasks() {
       return this.tasks;
+    },
+    workTasks() {
+      return this.tasks.filter(task => task.flag === 'work');
+    },
+    personalTasks() {
+      return this.tasks.filter(task => task.flag === 'personal');
     },
   },
 
   methods: {
-    getTasks(day) {
-      return this.localTasks.filter(task => task.date === day);
+    getAllTasks(day) {
+      return this.allTasks.filter(task => task.date === day);
+    },
+    getWorkTasks(day) {
+      return this.workTasks.filter(task => task.date === day);
+    },
+    getPersonalTasks(day) {
+      return this.personalTasks.filter(task => task.date === day);
+    },
+    getCorrectTaskboard(day) {
+      if (this.showWorkTasks) {
+        return this.getWorkTasks(day);
+      } else if (this.showPersonalTasks) {
+        return this.getPersonalTasks(day);
+      }
+      return this.getAllTasks(day);
+    },
+    setWorkTaskboard(expr) {
+      switch (expr) {
+        case 'all': {
+          this.showWorkTasks = false;
+          this.showPersonalTasks = false;
+          this.showAllTasks = true;
+          break;
+        }
+        case 'work': {
+          this.showWorkTasks = true;
+          this.showPersonalTasks = false;
+          this.showAllTasks = false;
+          break;
+        }
+        case 'personal': {
+          this.showWorkTasks = false;
+          this.showPersonalTasks = true;
+          this.showAllTasks = false;
+          break;
+        }
+        default: {
+          this.showWorkTasks = false;
+          this.showPersonalTasks = false;
+          this.showAllTasks = true;
+          break;
+        }
+      }
     },
     openAddModal() {
       this.showAddModal = true;
