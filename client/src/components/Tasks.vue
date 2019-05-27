@@ -3,14 +3,14 @@
     <b-button variant="outline-success" size="sm" @click="openAddModal()">
       Add Task
     </b-button>
-    <b-button variant="outline-warning" size="sm" @click="setWorkTaskboard('work')">
+    <b-button variant="outline-warning" size="sm" @click="setCategory('work')">
       Work
     </b-button>
-    <b-button variant="outline-warning" size="sm" @click="setWorkTaskboard('personal')">
+    <b-button variant="outline-warning" size="sm" @click="setCategory('personal')">
       Personal
     </b-button>
     <b-button v-if="!showAllTasks" variant="outline-warning" size="sm"
-    @click="setWorkTaskboard('all')">
+    @click="setCategory('all')">
     All
     </b-button>
     <br><br>
@@ -61,6 +61,19 @@
       <br>
       <b-button variant="outline-info" size="sm">Update</b-button>
       <b-button variant="outline-danger" size="sm">Delete</b-button>
+      <br><br>
+      <div>
+        <h2>COMPLETED TASKS</h2> <hr>
+      </div>
+
+      <b-list-group v-for="task in completedTasks" :key="task.id">
+        <div class="text-left">
+          <b-list-group-item variant="secondary">Task:
+            <em v-b-popover.hover.right="task.description" title="Details">{{task.title}}</em>
+            </b-list-group-item>
+        </div>
+      </b-list-group>
+
     </div>
 </template>
 
@@ -79,7 +92,7 @@ export default {
         description: 'Buy Cookies',
         flag: 'work',
         importance: 'high',
-        state: 'complete',
+        state: 1,
       },
       {
         id: '2',
@@ -88,7 +101,7 @@ export default {
         description: 'Needs to be done ASAP',
         flag: 'work',
         importance: 'high',
-        state: 'incomplete',
+        state: 0,
       },
       {
         id: '3',
@@ -97,7 +110,7 @@ export default {
         description: '@fancy supermarket',
         flag: 'personal',
         importance: 'low',
-        state: 'incomplete',
+        state: 0,
       },
       {
         id: '4',
@@ -106,7 +119,7 @@ export default {
         description: 'To-Do: Tickets #73, #75, #79',
         flag: 'work',
         importance: 'high',
-        state: 'incomplete',
+        state: 0,
       },
       {
         id: '5',
@@ -115,13 +128,15 @@ export default {
         description: 'Having an existential crisis',
         flag: 'work',
         important: 'high',
-        state: 'incomplete',
+        state: 1,
       }],
       showAddModal: false,
       showEditModal: false,
       showAllTasks: true,
       showWorkTasks: false,
       showPersonalTasks: false,
+      showingCompleted: false,
+      done: 1,
     };
   },
 
@@ -138,6 +153,9 @@ export default {
     },
     personalTasks() {
       return this.tasks.filter(task => task.flag === 'personal');
+    },
+    completedTasks() {
+      return this.tasks.filter(task => task.state === this.done);
     },
   },
 
@@ -159,7 +177,7 @@ export default {
       }
       return this.getAllTasks(day);
     },
-    setWorkTaskboard(expr) {
+    setCategory(expr) {
       switch (expr) {
         case 'all': {
           this.showWorkTasks = false;
