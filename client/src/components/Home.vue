@@ -6,12 +6,12 @@
       </b-col>
     </b-row>
 
-    <b-row class="row-margin">
+    <!--<b-row class="row-margin">
       <b-col>
-        <done/>
         <p>SECTION FOR COMPLETED TASKS</p>
+        <done/>
       </b-col>
-    </b-row>
+    </b-row>-->
 
     <b-row class="row-margin" align-v="end">
       <b-col>

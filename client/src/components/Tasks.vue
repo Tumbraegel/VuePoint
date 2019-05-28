@@ -1,8 +1,18 @@
 <template>
   <div>
-    <b-button variant="outline-success" size="sm" @click="openAddModal()">Add Task</b-button>
-    <b-button variant="outline-warning" size="sm">Work</b-button>
-    <b-button variant="outline-warning" size="sm">Personal</b-button>
+    <b-button variant="outline-success" size="sm" @click="openAddModal()">
+      Add Task
+    </b-button>
+    <b-button variant="outline-warning" size="sm" @click="setCategory('work')">
+      Work
+    </b-button>
+    <b-button variant="outline-warning" size="sm" @click="setCategory('personal')">
+      Personal
+    </b-button>
+    <b-button v-if="!showAllTasks" variant="outline-warning" size="sm"
+    @click="setCategory('all')">
+    All
+    </b-button>
     <br><br>
 
         <!--ADD TASK MODAL-->
@@ -23,7 +33,8 @@
             <div class="col-sm weekday" v-for="day in days" :key="day">
               <h2 class="weekday-header">{{ day }}</h2>
               <ul class="task">
-                <li id="task" v-for="task in getTasks()" :key="task.id" @click="openEditModal()">
+                <li id="task" v-for="task in getCorrectTaskboard(day)" :key="task.id"
+                @click="openEditModal()">
                   <strong>{{ task.title }}</strong>
                   <div>{{ task.description }}</div>
                 </li>
@@ -50,6 +61,17 @@
       <br>
       <b-button variant="outline-info" size="sm">Update</b-button>
       <b-button variant="outline-danger" size="sm">Delete</b-button>
+      <br><br>
+      <div>
+        <h2>COMPLETED TASKS</h2> <hr>
+      </div><!--
+      <b-list-group v-for="task in completedTasks" :key="task.id">
+        <div class="text-left">
+          <b-list-group-item variant="secondary">Task:
+            <em v-b-popover.hover.right="task.description" title="Details">{{task.title}}</em>
+            </b-list-group-item>
+        </div>
+      </b-list-group> -->
     </div>
 </template>
 
@@ -65,6 +87,11 @@ export default {
       tasks: '',
       showAddModal: false,
       showEditModal: false,
+      showAllTasks: true,
+      showWorkTasks: false,
+      showPersonalTasks: false,
+      showingCompleted: false,
+      done: 1,
     };
   },
 
@@ -73,9 +100,18 @@ export default {
   },
 
   computed: {
-    localTasks() {
+    allTasks() {
       return this.tasks;
     },
+    // workTasks() {
+    //   return this.tasks.filter(task => task.flag === 'work');
+    // },
+    // personalTasks() {
+    //   return this.tasks.filter(task => task.flag === 'personal');
+    // },
+    // completedTasks() {
+    //   return this.tasks.filter(task => task.state === this.done);
+    // },
   },
 
   methods: {
@@ -90,9 +126,54 @@ export default {
           console.error(error);
         });
     },
-    getTasks() {
-      return this.tasks;
-      // return this.localTasks.filter(task => task.date === day);
+    getAllTasksPer(day) {
+      // eslint-disable-next-line
+      console.log(this.tasks)
+      // eslint-disable-next-line
+      console.log(day);
+      return this.allTasks;
+    },
+    getWorkTasks(day) {
+      return this.workTasks.filter(task => task.date === day);
+    },
+    getPersonalTasks(day) {
+      return this.personalTasks.filter(task => task.date === day);
+    },
+    getCorrectTaskboard(day) {
+      if (this.showWorkTasks) {
+        return this.getWorkTasks(day);
+      } else if (this.showPersonalTasks) {
+        return this.getPersonalTasks(day);
+      }
+      return this.getAllTasksPer(day);
+    },
+    setCategory(expr) {
+      switch (expr) {
+        case 'all': {
+          this.showWorkTasks = false;
+          this.showPersonalTasks = false;
+          this.showAllTasks = true;
+          break;
+        }
+        case 'work': {
+          this.showWorkTasks = true;
+          this.showPersonalTasks = false;
+          this.showAllTasks = false;
+          break;
+        }
+        case 'personal': {
+          this.showWorkTasks = false;
+          this.showPersonalTasks = true;
+          this.showAllTasks = false;
+          break;
+        }
+        default: {
+          this.showWorkTasks = false;
+          this.showPersonalTasks = false;
+          this.showAllTasks = true;
+          break;
+        }
+      }
     },
     openAddModal() {
       this.showAddModal = true;
