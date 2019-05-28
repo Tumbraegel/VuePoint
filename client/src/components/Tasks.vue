@@ -23,7 +23,7 @@
             <div class="col-sm weekday" v-for="day in days" :key="day">
               <h2 class="weekday-header">{{ day }}</h2>
               <ul class="task">
-                <li id="task" v-for="task in getTasks(day)" :key="task.id" @click="openEditModal()">
+                <li id="task" v-for="task in getTasks()" :key="task.id" @click="openEditModal()">
                   <strong>{{ task.title }}</strong>
                   <div>{{ task.description }}</div>
                 </li>
@@ -54,53 +54,15 @@
 </template>
 
 <script>
+import axios from 'axios';
 import Modal from './Modal';
 
 export default {
+  name: 'tasks',
   data() {
     return {
       days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Weekend'],
-      tasks:
-      [{
-        id: '1',
-        title: 'Office Party',
-        date: 'Friday',
-        description: 'Buy Cookies',
-        importance: 'high',
-        state: 'complete',
-      },
-      {
-        id: '2',
-        title: 'Ticket #25',
-        date: 'Tuesday',
-        description: 'Needs to be done ASAP',
-        importance: 'high',
-        state: 'incomplete',
-      },
-      {
-        id: '3',
-        title: 'Grocery Shopping',
-        date: 'Weekend',
-        description: '@fancy supermarket',
-        importance: 'low',
-        state: 'incomplete',
-      },
-      {
-        id: '4',
-        title: 'Sprint 34 Deadline',
-        date: 'Wednesday',
-        description: 'To-Do: Tickets #73, #75, #79',
-        importance: 'high',
-        state: 'incomplete',
-      },
-      {
-        id: '5',
-        title: 'Sprint Review',
-        date: 'Wednesday',
-        description: 'Having an existential crisis',
-        important: 'high',
-        state: 'incomplete',
-      }],
+      tasks: '',
       showAddModal: false,
       showEditModal: false,
     };
@@ -117,8 +79,20 @@ export default {
   },
 
   methods: {
-    getTasks(day) {
-      return this.localTasks.filter(task => task.date === day);
+    getAllTasks() {
+      const path = 'http://localhost:5000/';
+      axios.get(path)
+        .then((res) => {
+          this.tasks = res.data;
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
+    getTasks() {
+      return this.tasks;
+      // return this.localTasks.filter(task => task.date === day);
     },
     openAddModal() {
       this.showAddModal = true;
@@ -133,6 +107,11 @@ export default {
     submitAndClose() {
     // add stuff
     },
+  },
+  created() {
+    this.getAllTasks();
+    // eslint-disable-next-line
+    console.log('created')
   },
 };
 </script>
