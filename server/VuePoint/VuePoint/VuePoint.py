@@ -4,6 +4,7 @@
 import os
 import sqlite3
 import json
+import datetime
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, jsonify
 from  flask_wtf  import  Form
@@ -121,25 +122,19 @@ class Task(Base):
 
 Base.metadata.create_all(engine)
 
-@app.route('/list', methods=['GET'])
+@app.route('/list', methods=['GET', 'POST'])
 def show_all_tasks():
     response_object = {'status': 'success'}
-    # tasks = session.query(Task).all()
-    response_object['tasks'] = sqlAlchemyTasksToViewTask(session.query(Task).all())
+    if request.method == 'POST':
+        post_data = request.get_json()
+        new_task = Task(title=post_data.get('title'), taskDescription=post_data.get('taskDescription'), dueDate=datetime.date.today(), taskState=0)
+        session.add(new_task)
+        session.commit()
+        response_object['message'] = 'task added!'
+    else:
+        # response_object['tasks'] = mock_tasks
+        response_object['tasks'] = sqlAlchemyTasksToViewTask(session.query(Task).all())
     return jsonify(response_object)
-
-    # response_object = {'status': 'success'}
-    # if request.method == 'POST':
-    #     post_data = request.get_json()
-    #     BOOKS.append({
-    #         'title': post_data.get('title'),
-    #         'author': post_data.get('author'),
-    #         'read': post_data.get('read')
-    #     })
-    #     response_object['message'] = 'Book added!'
-    # else:
-    #     response_object['books'] = BOOKS
-    # return jsonify(response_object)
 
 def sqlAlchemyTasksToViewTask(tasks):
     viewTasks = []
@@ -149,16 +144,13 @@ def sqlAlchemyTasksToViewTask(tasks):
 
 @app.route('/add', methods=['POST'])
 def add_task():
-    form = WTPostForm()
-    if form.validate ():
-        new_task = Task(title=form.data['title'], taskDescription=form.data['taskDescription'], dueDate=form.data['dueDate'], taskState=0)
-        session.add(new_task)
-        session.commit()
-    else:
-        for  err in form.errors.items():
-            flash(str(err))
-    flash('New task was successfully posted')
-    return redirect(url_for('show_all_tasks'))  
+    response_object = {'status': 'success'}
+    post_data = request.get_json()
+    new_task = Task(title=post_data.get('title'), taskDescription=post_data.get('taskDescription'), dueDate=datetime.date.today(), taskState=0)
+    session.add(new_task)
+    session.commit()
+    response_object['message'] = 'task added!'
+    return jsonify(response_object)  
 
 @app.route('/ping', methods=['GET'])
 def ping_pong():

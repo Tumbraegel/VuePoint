@@ -108,6 +108,10 @@ export default {
       showPersonalTasks: false,
       showingCompleted: false,
       done: 1,
+      addTaskForm: {
+        title: '',
+        taskDescription: '',
+      },
     };
   },
 
@@ -142,6 +146,46 @@ export default {
           console.error(error);
         });
     },
+
+    // adapted from https://testdriven.io/blog/developing-a-single-page-app-with-flask-and-vuejs/ up to onReset() method
+    addTask(payload) {
+      const path = 'http://localhost:5000/list';
+      axios.post(path, payload)
+        .then(() => {
+          this.getAllTasks();
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.log(error);
+          this.getAllTasks();
+        });
+    },
+
+    initForm() {
+      this.addTaskForm.title = '';
+      this.addTaskForm.taskDescription = '';
+    },
+
+    onSubmit(evt) {
+      evt.preventDefault();
+      this.$refs.addTaskModal.hide();
+      let read = false;
+      if (this.addTaskForm.read[0]) read = true;
+      const payload = {
+        title: this.addTaskForm.title,
+        taskDescription: this.addTaskForm.taskDescription,
+        read, // property shorthand
+      };
+      this.addTask(payload);
+      this.initForm();
+    },
+
+    onReset(evt) {
+      evt.preventDefault();
+      this.$refs.addTaskModal.hide();
+      this.initForm();
+    },
+
     getAllTasksPer(day) {
       // jb: I just print the days to get rid of the linter warning of an unused variable
       // eslint-disable-next-line
