@@ -24,7 +24,7 @@
             <li id="task" v-for="task in getCorrectTaskboard(day)" :key="task.id"
             @click="openEditModal()">
               <strong>{{ task.title }}</strong>
-              <div>{{ task.description }}</div>
+              <div>{{ task.taskDescription }}</div>
             </li>
           </ul>
         </b-col>
@@ -84,7 +84,7 @@
       <b-list-group v-for="task in completedTasks" :key="task.id">
         <div class="text-left">
           <b-list-group-item variant="secondary">Task:
-            <em v-b-popover.hover.right="task.description" title="Details">{{task.title}}</em>
+            <em v-b-popover.hover.right="task.taskDescription" title="Details">{{task.title}}</em>
             </b-list-group-item>
         </div>
       </b-list-group> -->
@@ -132,10 +132,10 @@ export default {
 
   methods: {
     getAllTasks() {
-      const path = 'http://localhost:5000/';
+      const path = 'http://localhost:5000/list';
       axios.get(path)
         .then((res) => {
-          this.tasks = res.data;
+          this.tasks = res.data.tasks;
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -143,8 +143,7 @@ export default {
         });
     },
     getAllTasksPer(day) {
-      // eslint-disable-next-line
-      console.log(this.tasks)
+      // jb: I just print the days to get rid of the linter warning of an unused variable
       // eslint-disable-next-line
       console.log(day);
       return this.allTasks;

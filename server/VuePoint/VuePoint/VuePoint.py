@@ -1,4 +1,4 @@
-# Adapted from http://flask.pocoo.org/docs/0.12/tutorial/
+# Adapted from http://flask.pocoo.org/docs/0.12/tutorial/ and https://testdriven.io/blog/developing-a-single-page-app-with-flask-and-vuejs/
 # to initialize a new db run 'flask initdb' in terminal
 # all the imports
 import os
@@ -68,6 +68,49 @@ def close_db(error):
 
 Base  = declarative_base()
 
+mock_tasks =[
+{
+    'id': '1',
+    'title': 'Office Party',
+    'dueDate': 'Friday',
+    'taskDescription': 'Buy Cookies',
+    # importance: 'high',
+    'taskState': '1',
+    },
+    {
+    'id': '2',
+    'title': 'Ticket #25',
+    'dueDate': 'Tuesday',
+    'taskDescription': 'Needs to be done ASAP',
+    # importance: 'high',
+    'taskState': '0',
+    },
+    {
+    'id': '3',
+    'title': 'Grocery Shopping',
+    'dueDate': 'Weekend',
+    'taskDescription': '@fancy supermarket',
+    # importance: 'low',
+    'taskState': '0',
+    },
+    {
+    'id': '4',
+    'title': 'Sprint 34 Deadline',
+    'dueDate': 'Wednesday',
+    'taskDescription': 'To-Do: Tickets #73, #75, #79',
+    # importance: 'high',
+    'taskState': '0',
+    },
+    {
+    'id': '5',
+    'title': 'Sprint Review',
+    'dueDate': 'Wednesday',
+    'taskDescription': 'Having an existential crisis',
+    # important: 'high',
+    'taskState': '0',
+    }
+]
+
 class Task(Base):
     __tablename__ = 'task'
     id = Column(Integer, primary_key=True)
@@ -78,10 +121,25 @@ class Task(Base):
 
 Base.metadata.create_all(engine)
 
-@app.route('/')
+@app.route('/list', methods=['GET'])
 def show_all_tasks():
-    tasks = session.query(Task).all()
-    return jsonify(sqlAlchemyTasksToViewTask(tasks))
+    response_object = {'status': 'success'}
+    # tasks = session.query(Task).all()
+    response_object['tasks'] = sqlAlchemyTasksToViewTask(session.query(Task).all())
+    return jsonify(response_object)
+
+    # response_object = {'status': 'success'}
+    # if request.method == 'POST':
+    #     post_data = request.get_json()
+    #     BOOKS.append({
+    #         'title': post_data.get('title'),
+    #         'author': post_data.get('author'),
+    #         'read': post_data.get('read')
+    #     })
+    #     response_object['message'] = 'Book added!'
+    # else:
+    #     response_object['books'] = BOOKS
+    # return jsonify(response_object)
 
 def sqlAlchemyTasksToViewTask(tasks):
     viewTasks = []
@@ -100,7 +158,7 @@ def add_task():
         for  err in form.errors.items():
             flash(str(err))
     flash('New task was successfully posted')
-    return redirect(url_for('show_all_tasks'))       
+    return redirect(url_for('show_all_tasks'))  
 
 @app.route('/ping', methods=['GET'])
 def ping_pong():
