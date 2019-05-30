@@ -81,10 +81,13 @@ Base.metadata.create_all(engine)
 @app.route('/')
 def show_all_tasks():
     tasks = session.query(Task).all()
+    return jsonify(sqlAlchemyTasksToViewTask(tasks))
+
+def sqlAlchemyTasksToViewTask(tasks):
     viewTasks = []
     for task in tasks:
         viewTasks.append({'id': task.id, 'title': task.title, 'taskDescription': task.taskDescription, 'dueDate': task.dueDate, 'taskState': task.taskState})
-    return jsonify(viewTasks)
+    return viewTasks
 
 @app.route('/add', methods=['POST'])
 def add_task():
