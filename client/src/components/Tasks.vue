@@ -1,7 +1,7 @@
 <template>
   <div>
-    <b-button variant="outline-success" size="sm" @click="openAddModal()">
-      Add Task
+    <b-button variant="outline-primary" size="sm" v-b-modal.addNew>
+      Add New
     </b-button>
     <b-button variant="outline-warning" size="sm" @click="setCategory('work')">
       Work
@@ -15,36 +15,52 @@
     </b-button>
     <br><br>
 
-        <!--ADD TASK MODAL-->
-        <div id="wrapper" class="container">
-          <modal v-if="showAddModal">
-            <h3 slot="header" class="modal-title">Add Task</h3>
-            <div slot="footer">
-              <button type="button" class="btn btn-outline-info" @click="closeModal()">
-                Close</button>
-              <button type="button" class="btn btn-primary" data-dismiss="modal"
-              @click="submitAndClose()">Submit</button>
-            </div>
-          </modal>
-        </div>
+    <!-- Tasks table  -->
+    <b-container fluid class="weekday-table">
+      <b-row>
+        <b-col size="sm" class="weekday" v-for="day in days" :key="day">
+          <h2 class="weekday-header">{{ day }}</h2>
+          <ul class="task">
+            <li id="task" v-for="task in getCorrectTaskboard(day)" :key="task.id"
+            @click="openEditModal()">
+              <strong>{{ task.title }}</strong>
+              <div>{{ task.description }}</div>
+            </li>
+          </ul>
+        </b-col>
+      </b-row>
+    </b-container>
 
-        <div class="container weekday-table">
-          <div class="row">
-            <div class="col-sm weekday" v-for="day in days" :key="day">
-              <h2 class="weekday-header">{{ day }}</h2>
-              <ul class="task">
-                <li id="task" v-for="task in getCorrectTaskboard(day)" :key="task.id"
-                @click="openEditModal()">
-                  <strong>{{ task.title }}</strong>
-                  <div>{{ task.description }}</div>
-                </li>
-              </ul>
-            </div>
+        <!--ADD TASK MODAL-->
+        <b-modal id="addNew" centered scrollable hide-footer title="Add New Task">
+          <div id="form-add">
+            <b-form @submit="onsubmit" @onreset="onReset">
+              <b-form-group id="form-title" label="Task Title:">
+                <b-form-input id="form-title_input" v-model="text" placeholder="Enter task title">
+                </b-form-input>
+              </b-form-group>
+              <b-form-group id="form-date" label="Due Date">
+                <b-form-input id="form-date_input" v-model="date" placeholder="Enter task due date">
+                </b-form-input>
+              </b-form-group>
+              <b-form-group id="form-descr" label="Description:">
+                <b-form-input id="form-desc_input" v-model="text" placeholder="Enter task description">
+                </b-form-input>
+              </b-form-group>
+              <b-form-group id="form-flag" label="Flag:">
+                <b-form-input id="form-flag_input" v-model="text" placeholder="Choose a flag">
+                </b-form-input>
+              </b-form-group>
+            </b-form>
           </div>
-        </div>
+          <div id="btn">
+            <b-button id="btn-cancel" @click="$bvModal.hide('addNew')">Cancel</b-button>
+            <b-button variant="success" id="btn-create">Create</b-button>
+          </div>
+        </b-modal>
 
         <!--EDIT TASK MODAL-->
-        <div id="wrapper" class="container">
+        <b-container id="wrapper">
           <modal v-if="showEditModal">
             <h3 slot="header" class="modal-title">
               Edit Task #
@@ -56,7 +72,7 @@
               @click="submitAndClose()">Submit</button>
             </div>
           </modal>
-        </div>
+        </b-container>
 
       <br>
       <b-button variant="outline-info" size="sm">Update</b-button>
@@ -198,43 +214,48 @@ export default {
 </script>
 
 <style>
-.weekday-table {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
 
 h2 {
-  font-size: 3vh;
-}
-
-.weekday-header {
-  color: seagreen;
+  font-size: 1.5rem;;
 }
 
 .task {
-  display: inline-block;
-  font-size: 14px;
   list-style: none;
   text-align: center;
   padding: 0px;
   margin: 0px;
+  width: 100%;
 }
 
 #task:hover, task:focus, task:active{
-  background: rgb(51, 153, 95, 0.9);
-  color: rgb(233, 233, 233);
+  color: seagreen;
   cursor: pointer;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
 }
 
 .weekday {
-  font-size: 14px;
-  display: table-cell;
-  border: 1px solid seagreen;
-  margin: 2px;
-  padding: 5px;
-  vertical-align: top;
+  font-size: 0.9rem;
+  background-color: seagreen;
+  border-radius: 5px;
+  margin: 5px;
+  padding: 10px 5px;
   text-align: center;
+  color: white;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
   }
+
+.task li {
+    background-color: white;
+    border-radius: 5px;
+    margin: 5px;
+    color: black;
+    padding: 5%;
+  }
+</style>
+
+<style scoped>
+#btn {
+  float: right;
+}
+
 </style>
