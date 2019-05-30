@@ -113,12 +113,13 @@ mock_tasks =[
 ]
 
 class Task(Base):
-    __tablename__ = 'task'
+    __tablename__ = 'tasks'
     id = Column(Integer, primary_key=True)
     title = Column(String)
     taskDescription = Column(String)
     dueDate = Column(Date)
     taskState = Column(Integer)
+    flag = Column(String)
 
 Base.metadata.create_all(engine)
 
@@ -126,38 +127,40 @@ Base.metadata.create_all(engine)
 def show_all_tasks():
     response_object = {'status': 'success'}
     if request.method == 'POST':
-        post_data = request.get_json()
-        new_task = Task(title=post_data.get('title'), taskDescription=post_data.get('taskDescription'), dueDate=datetime.date.today(), taskState=0)
-        session.add(new_task)
-        session.commit()
+        addTask()
         response_object['message'] = 'task added!'
     else:
         # response_object['tasks'] = mock_tasks
         response_object['tasks'] = sqlAlchemyTasksToViewTask(session.query(Task).all())
     return jsonify(response_object)
 
+def addTask():
+    post_data = request.get_json()
+    new_task = Task(title=post_data.get('title'), taskDescription=post_data.get('taskDescription'),
+     dueDate=datetime.date.today(), taskState=0, flag=post_data.get('flag'))
+    session.add(new_task)
+    session.commit()
+
 def sqlAlchemyTasksToViewTask(tasks):
     viewTasks = []
     for task in tasks:
-        viewTasks.append({'id': task.id, 'title': task.title, 'taskDescription': task.taskDescription, 'dueDate': task.dueDate, 'taskState': task.taskState})
+        viewTasks.append({'id': task.id, 'title': task.title, 'taskDescription': task.taskDescription, 
+        'dueDate': task.dueDate, 'taskState': task.taskState, 'flag': task.flag})
     return viewTasks
 
 @app.route('/add', methods=['POST'])
 def add_task():
     response_object = {'status': 'success'}
-    post_data = request.get_json()
-    new_task = Task(title=post_data.get('title'), taskDescription=post_data.get('taskDescription'), dueDate=datetime.date.today(), taskState=0)
-    session.add(new_task)
-    session.commit()
+    addTask()
     response_object['message'] = 'task added!'
     return jsonify(response_object)  
 
 @app.route('/ping', methods=['GET'])
 def ping_pong():
     return jsonify('pong!')
-    
-class WTPostForm(Form):
-    title = StringField('title', validators=[DataRequired()])
-    taskDescription = StringField('taskDescription', validators=[DataRequired()])
-    dueDate = DateField('dueDate', validators=[DataRequired()])
+
+# class WTPostForm(Form):
+#     title = StringField('title', validators=[DataRequired()])
+#     taskDescription = StringField('taskDescription', validators=[DataRequired()])
+#     dueDate = DateField('dueDate', validators=[DataRequired()])
 

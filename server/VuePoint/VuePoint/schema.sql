@@ -5,5 +5,6 @@ create TABLE tasks(
   title text not null,
   taskDescription text,
   dueDate date not null DEFAULT CURRENT_DATE,
-  taskState INTEGER not null
+  taskState INTEGER not null,
+  flag text
 );
