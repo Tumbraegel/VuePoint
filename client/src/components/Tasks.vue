@@ -44,7 +44,7 @@
                 </b-form-input>
               </b-form-group>
               <b-form-group id="form-descr" label="Description:">
-                <b-form-input id="form-desc_input" v-model="text" placeholder="Enter task description">
+                <b-form-input id="form-desc_input" v-model="text" placeholder="Enter description">
                 </b-form-input>
               </b-form-group>
               <b-form-group id="form-flag" label="Flag:">
