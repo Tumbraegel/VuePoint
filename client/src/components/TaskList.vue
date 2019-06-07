@@ -6,7 +6,7 @@
     <b-button variant="outline-warning" size="sm" @click="setCategory('work')">
       Work
     </b-button>
-    <b-button variant="outline-warning" size="sm" @click="setCategory('personal')">
+    <b-button variant="outline-warning" size="sm" @click="setCategory('studies')">
       Personal
     </b-button>
     <b-button v-if="!showAllTasks" variant="outline-warning" size="sm"
@@ -18,7 +18,7 @@
     <!-- Tasks table  -->
     <b-container fluid class="weekday-table">
       <b-row>
-        <b-col size="sm" class="weekday" v-for="day in days" :key="day">
+        <b-col size="sm" class="weekday" v-for="day in weekdays" :key="day">
           <h2 class="weekday-header">{{ day }}</h2>
           <ul class="task">
             <li id="task" v-for="task in getCorrectTaskboard(day)" :key="task.id"
@@ -40,7 +40,8 @@
                 </b-form-input>
               </b-form-group>
               <b-form-group id="form-date" label="Due Date">
-                <b-form-input id="form-date_input" v-model="date" placeholder="Enter task due date">
+                <b-form-input id="form-date_input" type="date" v-model="date"
+                placeholder="Enter task due date">
                 </b-form-input>
               </b-form-group>
               <b-form-group id="form-descr" label="Description:">
@@ -78,36 +79,25 @@
       <b-button variant="outline-info" size="sm">Update</b-button>
       <b-button variant="outline-danger" size="sm">Delete</b-button>
       <br><br>
-      <div>
-        <h2>COMPLETED TASKS</h2> <hr>
-      </div><!--
-      <b-list-group v-for="task in completedTasks" :key="task.id">
-        <div class="text-left">
-          <b-list-group-item variant="secondary">Task:
-            <em v-b-popover.hover.right="task.taskDescription" title="Details">{{task.title}}</em>
-            </b-list-group-item>
-        </div>
-      </b-list-group> -->
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+// import axios from 'axios';
+import moment from 'moment';
 import Modal from './Modal';
 
 export default {
   name: 'tasks',
+  props: ['taskList', 'addTask'],
   data() {
     return {
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Weekend'],
-      tasks: '',
+      weekdays: [],
       showAddModal: false,
       showEditModal: false,
       showAllTasks: true,
       showWorkTasks: false,
       showPersonalTasks: false,
-      showingCompleted: false,
-      done: 1,
       addTaskForm: {
         title: '',
         taskDescription: '',
@@ -119,48 +109,7 @@ export default {
     Modal,
   },
 
-  computed: {
-    allTasks() {
-      return this.tasks;
-    },
-    // workTasks() {
-    //   return this.tasks.filter(task => task.flag === 'work');
-    // },
-    // personalTasks() {
-    //   return this.tasks.filter(task => task.flag === 'personal');
-    // },
-    // completedTasks() {
-    //   return this.tasks.filter(task => task.state === this.done);
-    // },
-  },
-
   methods: {
-    getAllTasks() {
-      const path = 'http://localhost:5000/list';
-      axios.get(path)
-        .then((res) => {
-          this.tasks = res.data.tasks;
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.error(error);
-        });
-    },
-
-    // adapted from https://testdriven.io/blog/developing-a-single-page-app-with-flask-and-vuejs/ up to onReset() method
-    addTask(payload) {
-      const path = 'http://localhost:5000/list';
-      axios.post(path, payload)
-        .then(() => {
-          this.getAllTasks();
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.log(error);
-          this.getAllTasks();
-        });
-    },
-
     initForm() {
       this.addTaskForm.title = '';
       this.addTaskForm.taskDescription = '';
@@ -186,18 +135,25 @@ export default {
       this.initForm();
     },
 
+    getThisWeekDates() {
+      for (let i = 1; i <= 7; i += 1) {
+        this.weekdays.push(moment().day(i).format('ddd, DD MMM'));
+      }
+      return this.weekdays;
+    },
+
     getAllTasksPer(day) {
-      // jb: I just print the days to get rid of the linter warning of an unused variable
-      // eslint-disable-next-line
-      console.log(day);
-      return this.allTasks;
+      return this.taskList.filter(task => task.dueDate.includes(day));
     },
+
     getWorkTasks(day) {
-      return this.workTasks.filter(task => task.date === day);
+      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'work');
     },
+
     getPersonalTasks(day) {
-      return this.personalTasks.filter(task => task.date === day);
+      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'studies');
     },
+
     getCorrectTaskboard(day) {
       if (this.showWorkTasks) {
         return this.getWorkTasks(day);
@@ -206,6 +162,7 @@ export default {
       }
       return this.getAllTasksPer(day);
     },
+
     setCategory(expr) {
       switch (expr) {
         case 'all': {
@@ -220,7 +177,7 @@ export default {
           this.showAllTasks = false;
           break;
         }
-        case 'personal': {
+        case 'studies': {
           this.showWorkTasks = false;
           this.showPersonalTasks = true;
           this.showAllTasks = false;
@@ -234,30 +191,31 @@ export default {
         }
       }
     },
+
     openAddModal() {
       this.showAddModal = true;
     },
+
     openEditModal() {
       this.showEditModal = true;
     },
+
     closeModal() {
       this.showEditModal = false;
       this.showAddModal = false;
     },
+
     submitAndClose() {
     // add stuff
     },
   },
   created() {
-    this.getAllTasks();
-    // eslint-disable-next-line
-    console.log('created')
+    this.getThisWeekDates();
   },
 };
 </script>
 
 <style>
-
 h2 {
   font-size: 1.5rem;;
 }
@@ -300,5 +258,4 @@ h2 {
 #btn {
   float: right;
 }
-
 </style>
