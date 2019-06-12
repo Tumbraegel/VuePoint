@@ -1,138 +1,97 @@
 <template>
-  <div>
-    <b-button variant="outline-primary" size="sm" v-b-modal.addNew>
-      Add New
-    </b-button>
-    <b-button variant="outline-warning" size="sm" @click="setCategory('work')">
-      Work
-    </b-button>
-    <b-button variant="outline-warning" size="sm" @click="setCategory('studies')">
-      Personal
-    </b-button>
-    <b-button v-if="!showAllTasks" variant="outline-warning" size="sm"
-    @click="setCategory('all')">
-    All
-    </b-button>
-    <br><br>
-
-    <!-- Tasks table  -->
-    <b-container fluid class="weekday-table">
-      <b-row>
-        <b-col size="sm" class="weekday" v-for="day in weekdays" :key="day">
-          <h2 class="weekday-header">{{ day }}</h2>
-          <ul class="task">
-            <li id="task" v-for="task in getCorrectTaskboard(day)" :key="task.id"
-            @click="openEditModal()">
-              <strong>{{ task.title }}</strong>
-              <div>{{ task.taskDescription }}</div>
-            </li>
-          </ul>
-        </b-col>
-      </b-row>
-    </b-container>
-
-        <!--ADD TASK MODAL-->
-        <b-modal id="addNew" centered scrollable hide-footer title="Add New Task">
-          <div id="form-add">
-            <b-form @submit="onsubmit" @onreset="onReset">
-              <b-form-group id="form-title" label="Task Title:">
-                <b-form-input id="form-title_input" v-model="text" placeholder="Enter task title">
-                </b-form-input>
-              </b-form-group>
-              <b-form-group id="form-date" label="Due Date">
-                <b-form-input id="form-date_input" type="date" v-model="date"
-                placeholder="Enter task due date">
-                </b-form-input>
-              </b-form-group>
-              <b-form-group id="form-descr" label="Description:">
-                <b-form-input id="form-desc_input" v-model="text" placeholder="Enter description">
-                </b-form-input>
-              </b-form-group>
-              <b-form-group id="form-flag" label="Flag:">
-                <b-form-input id="form-flag_input" v-model="text" placeholder="Choose a flag">
-                </b-form-input>
-              </b-form-group>
-            </b-form>
-          </div>
-          <div id="btn">
-            <b-button id="btn-cancel" @click="$bvModal.hide('addNew')">Cancel</b-button>
-            <b-button variant="success" id="btn-create">Create</b-button>
-          </div>
-        </b-modal>
-
-        <!--EDIT TASK MODAL-->
-        <b-container id="wrapper">
-          <modal v-if="showEditModal">
-            <h3 slot="header" class="modal-title">
-              Edit Task #
-            </h3>
-            <div slot="footer">
-              <button type="button" class="btn btn-outline-info" @click="closeModal()">
-                Close</button>
-              <button type="button" class="btn btn-primary" data-dismiss="modal"
-              @click="submitAndClose()">Submit</button>
-            </div>
-          </modal>
-        </b-container>
-
-      <br>
-      <b-button variant="outline-info" size="sm">Update</b-button>
-      <b-button variant="outline-danger" size="sm">Delete</b-button>
-      <br><br>
-    </div>
+  <b-container fluid class="weekday-table">
+    <b-row class="justify-content-center">
+      <add-task></add-task>
+    </b-row> 
+    
+    <b-row class="day-container">
+      <b-col size="md" class="weekday" v-for="day in weekdays" :key="day">
+        <div class="weekday-header">
+           <h2>{{ day }}</h2>
+        </div>
+       
+        <ul class="tasks">
+          <li id="task" v-for="task in getAllTasksPer(day)" :key="task.id"
+          @click="openEditModal()">
+            <b-button class="close" aria-label="Close" v-on:click="deleteTask(task.id)">
+              <span aria-hidden="true">&times;</span>
+            </b-button>
+            <h3>{{ task.title }}</h3>  
+            <div class="descr">{{ task.taskDescription }}</div>
+          </li>
+        </ul>
+      </b-col>
+    </b-row>
+      
+    <b-row class="justify-content-center flag-btn">
+      <b-button variant="outline-warning" size="sm" @click="getWorkTasks">
+      Work</b-button>
+      <b-button variant="outline-warning" size="sm" @click="setCategory('studies')">
+        Studies</b-button>
+      <b-button variant="outline-warning" size="sm" @click="setCategory('personal')">
+        Personal</b-button>
+      <b-button v-if="!showAllTasks" variant="outline-warning" size="sm"
+      @click="setCategory('all')">All</b-button>
+    </b-row>
+    
+  </b-container>
 </template>
 
 <script>
-// import axios from 'axios';
+import axios from 'axios';
 import moment from 'moment';
-import Modal from './Modal';
+import AddTask from './AddTask.vue';
+import Modal from './Modal.vue';
 
 export default {
-  name: 'tasks',
-  props: ['taskList', 'addTask'],
+  components: {
+    'add-task': AddTask,
+  },
+
   data() {
     return {
       weekdays: [],
-      showAddModal: false,
+      tasks: [],
       showEditModal: false,
       showAllTasks: true,
       showWorkTasks: false,
+      showStudiesTask: false,
       showPersonalTasks: false,
-      addTaskForm: {
-        title: '',
-        taskDescription: '',
-      },
     };
   },
 
-  components: {
-    Modal,
-  },
-
   methods: {
-    initForm() {
-      this.addTaskForm.title = '';
-      this.addTaskForm.taskDescription = '';
+    // adapted from https://testdriven.io/blog/developing-a-single-page-app-with-flask-and-vuejs/ up to onReset() method
+    getAllTasks() {
+      const path = 'http://localhost:5000/list';
+      axios.get(path)
+        .then((res) => {
+          this.tasks = res.data.tasks;
+          this.setEditing();
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
     },
 
-    onSubmit(evt) {
-      evt.preventDefault();
-      this.$refs.addTaskModal.hide();
-      let read = false;
-      if (this.addTaskForm.read[0]) read = true;
-      const payload = {
-        title: this.addTaskForm.title,
-        taskDescription: this.addTaskForm.taskDescription,
-        read, // property shorthand
-      };
-      this.addTask(payload);
-      this.initForm();
+    setEditing() {
+      for (let i = 0; i < this.tasks.length; i++) {
+        this.$set(this.tasks[i], 'editing', false);
+      }
     },
 
-    onReset(evt) {
-      evt.preventDefault();
-      this.$refs.addTaskModal.hide();
-      this.initForm();
+    deleteTask(id) {
+      const path = 'http://http://localhost:5000/list/remove/$(id)';
+      axios.delete(path)
+      .then(() => {
+          this.getAllTasks();
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+          this.getAllTasks();
+        });
     },
 
     getThisWeekDates() {
@@ -143,15 +102,19 @@ export default {
     },
 
     getAllTasksPer(day) {
-      return this.taskList.filter(task => task.dueDate.includes(day));
+      return this.tasks.filter(task => task.dueDate.includes(day));
     },
 
     getWorkTasks(day) {
-      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'work');
+      return this.tasks.filter(task => task.dueDate.includes(day) && task.flag === 'work');
+    },
+
+    getStudiesTasks(day) {
+      return this.tasks.filter(task => task.dueDate.includes(day) && task.flag === 'studies');
     },
 
     getPersonalTasks(day) {
-      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'studies');
+      return this.tasks.filter(task => task.dueDate.includes(day) && task.flag === 'personal');
     },
 
     getCorrectTaskboard(day) {
@@ -167,19 +130,22 @@ export default {
       switch (expr) {
         case 'all': {
           this.showWorkTasks = false;
+          this.showStudiesTasks = false;
           this.showPersonalTasks = false;
           this.showAllTasks = true;
           break;
         }
         case 'work': {
           this.showWorkTasks = true;
+          this.showStudiesTasks = false;
           this.showPersonalTasks = false;
           this.showAllTasks = false;
           break;
         }
         case 'studies': {
           this.showWorkTasks = false;
-          this.showPersonalTasks = true;
+          this.showStudiesTasks = true;
+          this.showPersonalTasks = false;
           this.showAllTasks = false;
           break;
         }
@@ -192,10 +158,6 @@ export default {
       }
     },
 
-    openAddModal() {
-      this.showAddModal = true;
-    },
-
     openEditModal() {
       this.showEditModal = true;
     },
@@ -205,9 +167,6 @@ export default {
       this.showAddModal = false;
     },
 
-    submitAndClose() {
-    // add stuff
-    },
   },
   created() {
     this.getThisWeekDates();
@@ -215,47 +174,71 @@ export default {
 };
 </script>
 
-<style>
-h2 {
-  font-size: 1.5rem;;
-}
+<style scoped>
+  .day-container, .flag-btn {
+    margin-top: 1em;
+  }
 
-.task {
-  list-style: none;
-  text-align: center;
-  padding: 0px;
-  margin: 0px;
-  width: 100%;
-}
+  .weekday {
+    font-size: 0.9rem;
+    background-color: seagreen;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 10px 5px;
+    text-align: center;
+    color: white;
+  }
 
-#task:hover, task:focus, task:active{
+  .weekday-header {
+    height: 30px;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+  
+  .tasks {
+    list-style: none;
+    text-align: center;
+    padding: 0px;
+    margin: 20px 0 0;
+    width: 100%;
+  }
+
+  #task:hover, task:focus, task:active{
   color: seagreen;
   cursor: pointer;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
-}
-
-.weekday {
-  font-size: 0.9rem;
-  background-color: seagreen;
-  border-radius: 5px;
-  margin: 5px;
-  padding: 10px 5px;
-  text-align: center;
-  color: white;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
   }
 
-.task li {
+  #task {
     background-color: white;
     border-radius: 5px;
-    margin: 5px;
+    margin: 8px 4px;
+    font-size: 1em;
     color: black;
-    padding: 5%;
+    word-wrap: break-word;
+    position: relative;
+    padding: 0.2em;
   }
-</style>
 
-<style scoped>
-#btn {
-  float: right;
-}
+  .close {
+    font-size: 1.2em;
+    padding: 1px 2px 2px; 
+  }
+
+  h3 {
+    font-size: 1em;
+    font-weight: 500;
+    padding: 0.2em;
+  }
+
+  .descr {
+    padding: 0.2em;
+    margin: 0;
+  }
+
+  .flag-btn button {
+    margin-right: 0.5em;
+  }
 </style>
