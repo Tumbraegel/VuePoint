@@ -19,7 +19,7 @@ from flask_cors import CORS
 app = Flask(__name__) # create the application instance :)
 app.config.from_object(__name__) # load config from this file , vuepoint.py
 
-engine = create_engine('sqlite:///vuePoint.db')
+engine = create_engine('sqlite:///vuePoint.db', connect_args={'check_same_thread': False})
 Session = sessionmaker(bind=engine)
 session = Session()
 

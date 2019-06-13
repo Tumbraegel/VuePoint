@@ -1,9 +1,8 @@
 <template>
 <b-container class="row-margin" id="home">
-    <b-row>
-      <b-col>
-        <task-list :taskList="taskList" :addTask="addTask"></task-list>
-      </b-col>
+    <b-row class="justify-content-center">
+      <add-task v-on:add-task="addTask"></add-task>
+      <week-view :taskList="taskList"></week-view>
     </b-row>
 
     <b-row class="row-margin">
@@ -24,14 +23,16 @@
 
 <script>
 import axios from 'axios';
-import TaskList from './TaskList';
+import WeekView from './WeekView';
 import CompletedTasks from './CompletedTasks';
+import AddTask from './AddTask';
 
 export default {
   name: 'Home',
   components: {
     'completed-tasks': CompletedTasks,
-    'task-list': TaskList,
+    'week-view': WeekView,
+    'add-task': AddTask,
   },
   data() {
     return {
@@ -50,12 +51,15 @@ export default {
           console.error(error);
         });
     },
-    // adapted from https://testdriven.io/blog/developing-a-single-page-app-with-flask-and-vuejs/ up to onReset() method
+
     addTask(payload) {
       const path = 'http://localhost:5000/list';
       axios.post(path, payload)
         .then(() => {
           this.getAllTasks();
+          // this.show = false;
+          // eslint-disable-next-line
+        alert('New Task added');
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -63,6 +67,7 @@ export default {
           this.getAllTasks();
         });
     },
+
   },
   created() {
     this.getAllTasks();
