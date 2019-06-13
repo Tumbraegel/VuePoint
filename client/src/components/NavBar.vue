@@ -31,10 +31,6 @@ export default {
   background-color: rgb(51, 153, 95, 0.9) !important;
 }
 
-.navbar-brand {
-  padding-left: 1em !important;;
-}
-
 .btn-secondary {
   background-color: transparent;
   border-color: white;
