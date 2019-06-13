@@ -1,27 +1,33 @@
 <template>
     <!-- Tasks table  -->
-    <b-container fluid class="weekday-table">
+    <b-container fluid class="week-view">
       <b-row class="day-container">
-        <b-col size="md" class="weekday" v-for="day in weekdays" :key="day">
+        <b-col class="weekday" v-for="day in weekdays" :key="day">
           <div class="weekday-header">
             <h2>{{ day }}</h2>
           </div>
 
           <ul class="tasks">
-            <li id="task" v-for="task in getCorrectTaskboard(day)" :key="task.id"
-            @click="openEditModal()">
-              <strong>{{ task.title }}</strong>
-              <div>{{ task.taskDescription }}</div>
-            </li>
+            <li id="task" v-for="task in getAllTasksPer(day)" :key="task.id"
+          @click="openEditModal()">
+            <b-button class="close" aria-label="Close" v-on:click="deleteTask(task.id)">
+              <span aria-hidden="true">&times;</span>
+            </b-button>
+            <h3>{{ task.title }}</h3>  
+            <div class="descr">{{ task.taskDescription }}</div>
+          </li>
           </ul>
         </b-col>
       </b-row>
 
-      <b-row class="justify-content-center">
+      <b-row class="justify-content-center flag-btn">
          <b-button variant="outline-warning" size="sm" @click="setCategory('work')">
         Work
         </b-button>
         <b-button variant="outline-warning" size="sm" @click="setCategory('studies')">
+          Studies
+        </b-button>
+        <b-button variant="outline-warning" size="sm" @click="setCategory('personal')">
           Personal
         </b-button>
         <b-button v-if="!showAllTasks" variant="outline-warning" size="sm"
@@ -29,6 +35,7 @@
         All
         </b-button>
       </b-row>
+
     </b-container>
 </template>
 
@@ -42,8 +49,6 @@ export default {
   data() {
     return {
       weekdays: [],
-      showAddModal: false,
-      showEditModal: false,
       showAllTasks: true,
       showWorkTasks: false,
       showPersonalTasks: false,
@@ -111,71 +116,83 @@ export default {
         }
       }
     },
-
-    openAddModal() {
-      this.showAddModal = true;
-    },
-
-    openEditModal() {
-      this.showEditModal = true;
-    },
-
-    closeModal() {
-      this.showEditModal = false;
-      this.showAddModal = false;
-    },
-
-    submitAndClose() {
-    // add stuff
-    },
   },
+
+  deleteTask(id) {
+    this.$emit('delete-task', this.id);
+  },
+
   created() {
     this.getThisWeekDates();
   },
 };
 </script>
 
-<style>
-h2 {
-  font-size: 1.5rem;;
-}
+<style scoped>
+.day-container, .flag-btn {
+    margin-top: 1em;
+  }
 
-.task {
-  list-style: none;
-  text-align: center;
-  padding: 0px;
-  margin: 0px;
-  width: 100%;
-}
+  .weekday {
+    font-size: 0.9rem;
+    background-color: seagreen;
+    border-radius: 5px;
+    margin: 5px;
+    padding: 10px 5px;
+    text-align: center;
+    color: white;
+  }
 
-#task:hover, task:focus, task:active{
+  .weekday-header {
+    height: 30px;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+  }
+  
+  .tasks {
+    list-style: none;
+    text-align: center;
+    padding: 0px;
+    margin: 20px 0 0;
+    width: 100%;
+  }
+
+  #task:hover, task:focus, task:active{
   color: seagreen;
   cursor: pointer;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
-}
-
-.weekday {
-  font-size: 0.9rem;
-  background-color: seagreen;
-  border-radius: 5px;
-  margin: 5px;
-  padding: 10px 5px;
-  text-align: center;
-  color: white;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
   }
 
-.task li {
+  #task {
     background-color: white;
     border-radius: 5px;
-    margin: 5px;
+    margin: 8px 4px;
+    font-size: 1em;
     color: black;
-    padding: 5%;
+    word-wrap: break-word;
+    position: relative;
+    padding: 0.2em;
   }
-</style>
 
-<style scoped>
-#btn {
-  float: right;
-}
+  .close {
+    font-size: 1.2em;
+    padding: 1px 2px 2px; 
+  }
+
+  h3 {
+    font-size: 1em;
+    font-weight: 500;
+    padding: 0.2em;
+  }
+
+  .descr {
+    padding: 0.2em;
+    margin: 0;
+  }
+
+  .flag-btn button {
+    margin-right: 0.5em;
+  }
 </style>

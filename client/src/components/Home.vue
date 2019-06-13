@@ -1,20 +1,14 @@
 <template>
-<b-container class="row-margin" id="home">
+  <b-container id="home">
     <b-row class="justify-content-center">
       <add-task v-on:add-task="addTask"></add-task>
-      <week-view :taskList="taskList"></week-view>
+      <week-view :taskList="taskList" v-on:delete-task="deleteTask"></week-view>
     </b-row>
 
-    <b-row class="row-margin">
+    <b-row>
       <b-col>
         <p>SECTION FOR COMPLETED TASKS</p>
         <completed-tasks :taskList="taskList"></completed-tasks>
-      </b-col>
-    </b-row>
-
-    <b-row class="row-margin" align-v="end">
-      <b-col>
-        <p>FOOTER SECTION</p>
       </b-col>
     </b-row>
 
@@ -68,6 +62,11 @@ export default {
         });
     },
 
+    deleteTask(id) {
+      //Some code
+      alert('Task deleted');
+    }
+
   },
   created() {
     this.getAllTasks();
@@ -78,7 +77,7 @@ export default {
 </script>
 
 <style scoped>
-.row-margin {
-  margin-top: 3em;
+.row {
+  margin: 2em 0;
 }
 </style>
