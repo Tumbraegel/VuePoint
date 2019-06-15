@@ -8,12 +8,11 @@
           </div>
 
           <ul class="tasks">
-            <li id="task" v-for="task in getAllTasksPer(day)" :key="task.id"
-          @click="openEditModal()">
-            <b-button class="close" aria-label="Close" v-on:click="deleteTask(task.id)">
+            <li id="task" v-for="task in getCorrectTaskboard(day)" :key="task.id">
+            <b-button class="close" aria-label="Close" v-on:click="$emit('del-task', task.id)">
               <span aria-hidden="true">&times;</span>
             </b-button>
-            <h3>{{ task.title }}</h3>  
+            <h3>{{ task.title }}</h3>
             <div class="descr">{{ task.taskDescription }}</div>
           </li>
           </ul>
@@ -41,7 +40,6 @@
 
 <script>
 import moment from 'moment';
-import Modal from './Modal';
 
 export default {
   name: 'tasks',
@@ -52,11 +50,8 @@ export default {
       showAllTasks: true,
       showWorkTasks: false,
       showPersonalTasks: false,
+      showStudyTasks: false,
     };
-  },
-
-  components: {
-    Modal,
   },
 
   methods: {
@@ -75,8 +70,12 @@ export default {
       return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'work');
     },
 
-    getPersonalTasks(day) {
+    getStudyTasks(day) {
       return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'studies');
+    },
+
+    getPersonalTasks(day) {
+      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'personal');
     },
 
     getCorrectTaskboard(day) {
@@ -84,6 +83,8 @@ export default {
         return this.getWorkTasks(day);
       } else if (this.showPersonalTasks) {
         return this.getPersonalTasks(day);
+      } else if (this.showStudyTasks) {
+        return this.getStudyTasks(day);
       }
       return this.getAllTasksPer(day);
     },
@@ -93,33 +94,40 @@ export default {
         case 'all': {
           this.showWorkTasks = false;
           this.showPersonalTasks = false;
+          this.showStudyTasks = false;
           this.showAllTasks = true;
           break;
         }
         case 'work': {
           this.showWorkTasks = true;
           this.showPersonalTasks = false;
+          this.showStudyTasks = false;
+          this.showAllTasks = false;
+          break;
+        }
+        case 'personal': {
+          this.showWorkTasks = false;
+          this.showPersonalTasks = true;
+          this.showStudyTasks = false;
           this.showAllTasks = false;
           break;
         }
         case 'studies': {
           this.showWorkTasks = false;
-          this.showPersonalTasks = true;
+          this.showPersonalTasks = false;
+          this.showStudyTasks = true;
           this.showAllTasks = false;
           break;
         }
         default: {
           this.showWorkTasks = false;
           this.showPersonalTasks = false;
+          this.showStudyTasks = false;
           this.showAllTasks = true;
           break;
         }
       }
     },
-  },
-
-  deleteTask(id) {
-    this.$emit('delete-task', this.id);
   },
 
   created() {
@@ -150,7 +158,7 @@ export default {
   h2 {
     font-size: 1.1rem;
   }
-  
+
   .tasks {
     list-style: none;
     text-align: center;
@@ -178,7 +186,7 @@ export default {
 
   .close {
     font-size: 1.2em;
-    padding: 1px 2px 2px; 
+    padding: 1px 2px 2px;
   }
 
   h3 {

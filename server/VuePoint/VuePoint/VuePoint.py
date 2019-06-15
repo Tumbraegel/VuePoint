@@ -134,11 +134,26 @@ def show_all_tasks():
         response_object['tasks'] = sqlAlchemyTasksToViewTask(session.query(Task).all())
     return jsonify(response_object)
 
+@app.route('/list/<task_id>', methods=['GET', 'DELETE'])
+def single_task(task_id):
+    response_object = {'status': 'success'}
+    if request.method == 'DELETE':
+        deleteTask(task_id)
+        response_object['message'] = 'Task removed!'
+    else:
+        response_object['tasks'] = sqlAlchemyTasksToViewTask(session.query(Task).all())
+    return jsonify(response_object)
+
 def addTask():
     post_data = request.get_json()
     new_task = Task(title=post_data.get('title'), taskDescription=post_data.get('taskDescription'),
      dueDate=datetime.date.today(), taskState=0, flag=post_data.get('flag'))
     session.add(new_task)
+    session.commit()
+
+def deleteTask(task_id):
+    task_to_delete = session.query(Task).filter(Task.id==task_id).first()
+    session.delete(task_to_delete)
     session.commit()
 
 def sqlAlchemyTasksToViewTask(tasks):
@@ -153,7 +168,14 @@ def add_task():
     response_object = {'status': 'success'}
     addTask()
     response_object['message'] = 'task added!'
-    return jsonify(response_object)  
+    return jsonify(response_object)
+
+# @app.route('/delete/<task_id>', methods=['DELETE'])
+# def delete_task(task_id):
+#    response_object = {'status': 'success'}
+#    deleteTask(task_id)
+#    response_object['message'] = 'task deleted!'
+#    return jsonify(response_object)
 
 @app.route('/ping', methods=['GET'])
 def ping_pong():
@@ -163,4 +185,3 @@ def ping_pong():
 #     title = StringField('title', validators=[DataRequired()])
 #     taskDescription = StringField('taskDescription', validators=[DataRequired()])
 #     dueDate = DateField('dueDate', validators=[DataRequired()])
-

@@ -2,7 +2,7 @@
   <b-container id="home">
     <b-row class="justify-content-center">
       <add-task v-on:add-task="addTask"></add-task>
-      <week-view :taskList="taskList" v-on:delete-task="deleteTask"></week-view>
+      <week-view :taskList="taskList" v-on:del-task="deleteTask"></week-view>
     </b-row>
 
     <b-row>
@@ -63,10 +63,21 @@ export default {
     },
 
     deleteTask(id) {
-      //Some code
-      alert('Task deleted');
-    }
-
+      const path = `http://localhost:5000/list/${id}`;
+      axios.delete(path, id)
+        .then(() => {
+          this.getAllTasks();
+          // eslint-disable-next-line
+          alert('Task was deleted');
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+          // eslint-disable-next-line
+          alert('NOPE');
+          this.getAllTasks();
+        });
+    },
   },
   created() {
     this.getAllTasks();
