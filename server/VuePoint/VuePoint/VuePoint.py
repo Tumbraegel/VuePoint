@@ -143,10 +143,8 @@ def add_task():
 
 def addTask():
     post_data = request.get_json()
-    dueDate = post_data.get('dueDate')
-    dueDate_parsed = datetime.strptime(dueDate, '%Y-%m-%d')
     new_task = Task(title=post_data.get('title'), taskDescription=post_data.get('taskDescription'),
-     dueDate=dueDate_parsed, taskState=0, flag=post_data.get('flag'))
+     dueDate=datetime.strptime(post_data.get('dueDate'), '%Y-%m-%d'), taskState=0, flag=post_data.get('flag'))
     session.add(new_task)
     session.commit()
 
