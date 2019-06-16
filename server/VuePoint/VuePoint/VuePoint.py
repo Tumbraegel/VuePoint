@@ -127,24 +127,26 @@ Base.metadata.create_all(engine)
 def show_all_tasks():
     response_object = {'status': 'success'}
     if request.method == 'POST':
-        addTask()
+        postData = request.get_json()
+        newTask= Task(title=postData.get('title'), taskDescription=postData.get('taskDescription'),
+         dueDate=datetime.strptime(postData.get('dueDate'), '%Y-%m-%d'), taskState=0, flag=postData.get('flag'))
+        addTask(newTask)
         response_object['message'] = 'task added!'
     else:
-        # response_object['tasks'] = mock_tasks
         response_object['tasks'] = sqlAlchemyTasksToViewTask(session.query(Task).all())
     return jsonify(response_object)
 
 @app.route('/add', methods=['POST'])
 def add_task():
     response_object = {'status': 'success'}
-    addTask()
+    postData = request.get_json()
+    newTask = Task(title=postData.get('title'), taskDescription=postData.get('taskDescription'),
+     dueDate=datetime.strptime(postData.get('dueDate'), '%Y-%m-%d'), taskState=0, flag=postData.get('flag'))
+    addTask(newTask)
     response_object['message'] = 'task added!'
     return jsonify(response_object)
 
-def addTask():
-    post_data = request.get_json()
-    new_task = Task(title=post_data.get('title'), taskDescription=post_data.get('taskDescription'),
-     dueDate=datetime.strptime(post_data.get('dueDate'), '%Y-%m-%d'), taskState=0, flag=post_data.get('flag'))
+def addTask(new_task):
     session.add(new_task)
     session.commit()
 
@@ -155,20 +157,29 @@ def sqlAlchemyTasksToViewTask(tasks):
         'dueDate': task.dueDate, 'taskState': task.taskState, 'flag': task.flag})
     return viewTasks
 
-@app.route('/list/<task_id>', methods=['GET', 'DELETE'])
-def single_task(task_id):
+@app.route('/list/<taskId>', methods=['GET', 'DELETE', 'POST'])
+def single_task(taskId):
     response_object = {'status': 'success'}
     if request.method == 'DELETE':
-        deleteTask(task_id)
+        deleteTask(taskId)
         response_object['message'] = 'Task removed!'
+    elif request.method == 'POST':
+        updateTask(taskId)
+        response_object['message'] = 'Task updated!'
     else:
         response_object['tasks'] = sqlAlchemyTasksToViewTask(session.query(Task).all())
     return jsonify(response_object)
 
-def deleteTask(task_id):
-    task_to_delete = session.query(Task).filter(Task.id==task_id).first()
-    session.delete(task_to_delete)
+def deleteTask(taskId):
+    session.delete(getTaskBy(taskId))
     session.commit()
+
+def updateTask(taskId):
+    deleteTask(taskId)
+    addTask(taskId)
+
+def getTaskBy(taskId):
+    return session.query(Task).filter(Task.id==taskId).first()
 
 @app.route('/ping', methods=['GET'])
 def ping_pong():
