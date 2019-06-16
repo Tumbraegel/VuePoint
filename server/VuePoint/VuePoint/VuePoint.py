@@ -5,6 +5,7 @@ import os
 import sqlite3
 import json
 from datetime import datetime
+from datetime import date
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, jsonify
 from  flask_wtf  import  Form
@@ -127,21 +128,33 @@ Base.metadata.create_all(engine)
 def show_all_tasks():
     response_object = {'status': 'success'}
     if request.method == 'POST':
-        postData = request.get_json()
-        newTask= Task(title=postData.get('title'), taskDescription=postData.get('taskDescription'),
-         dueDate=datetime.strptime(postData.get('dueDate'), '%Y-%m-%d'), taskState=0, flag=postData.get('flag'))
+        newTask = extractDataFromRequest()
         addTask(newTask)
         response_object['message'] = 'task added!'
     else:
         response_object['tasks'] = sqlAlchemyTasksToViewTask(session.query(Task).all())
     return jsonify(response_object)
 
+def extractDataFromRequest():
+    postData = request.get_json()
+    title = getOrElse(postData, 'title', 'test title')
+    taskDescription = getOrElse(postData, 'taskDescription', 'test description')
+    dateFormat = '%Y-%m-%d'
+    dueDate = getOrElse(postData, 'dueDate', date.today().strftime(dateFormat))
+    flag = getOrElse(postData, 'flag', '')
+    newTask= Task(title=title, taskDescription=taskDescription, dueDate=datetime.strptime(dueDate, dateFormat), taskState=0, flag=flag)
+    return newTask
+
+def getOrElse(source, attributeName, defaultValue):
+    value = source.get(attributeName)
+    if value == "":
+        value = defaultValue
+    return value
+
 @app.route('/add', methods=['POST'])
 def add_task():
     response_object = {'status': 'success'}
-    postData = request.get_json()
-    newTask = Task(title=postData.get('title'), taskDescription=postData.get('taskDescription'),
-     dueDate=datetime.strptime(postData.get('dueDate'), '%Y-%m-%d'), taskState=0, flag=postData.get('flag'))
+    newTask = extractDataFromRequest()
     addTask(newTask)
     response_object['message'] = 'task added!'
     return jsonify(response_object)
