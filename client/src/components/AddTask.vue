@@ -16,11 +16,11 @@
                     placeholder="Task Title" v-model="addTaskForm.title"
                     ></b-form-input>
 
-                    <!-- <label class="sr-only" for="form-input-date">Date</label>
+                    <label class="sr-only" for="form-input-date">Date</label>
                     <b-input-group prepend="Due on:" class="mb-2 mr-sm-2 mb-sm-0 input-field">
                     <b-input id="form-input-date" type="date" v-model="addTaskForm.dueDate">
                     </b-input>
-                    </b-input-group> -->
+                    </b-input-group>
 
                     <label class="sr-only" for="form-input-decsription">Description</label>
                     <b-form-input id="form-input-description"
@@ -64,7 +64,7 @@ export default {
       addTaskForm: {
         title: '',
         taskDescription: '',
-        // dueDate: '',
+        dueDate: '',
         flag: '',
       },
     };
@@ -74,7 +74,7 @@ export default {
     initForm() {
       this.addTaskForm.title = '';
       this.addTaskForm.taskDescription = '';
-      // this.addTaskForm.dueDate = '';
+      this.addTaskForm.dueDate = '';
       this.addTaskForm.flag = '';
     },
 
@@ -83,7 +83,7 @@ export default {
       const payload = {
         title: this.addTaskForm.title,
         taskDescription: this.addTaskForm.taskDescription,
-        // dueDate: this.addTaskForm.dueDate,
+        dueDate: this.addTaskForm.dueDate,
         flag: this.addTaskForm.flag,
       };
       this.$emit('add-task', payload);

@@ -4,7 +4,7 @@
 import os
 import sqlite3
 import json
-import datetime
+from datetime import datetime
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, jsonify
 from  flask_wtf  import  Form
@@ -143,8 +143,10 @@ def add_task():
 
 def addTask():
     post_data = request.get_json()
+    dueDate = post_data.get('dueDate')
+    dueDate_parsed = datetime.strptime(dueDate, '%Y-%m-%d')
     new_task = Task(title=post_data.get('title'), taskDescription=post_data.get('taskDescription'),
-     dueDate=datetime.date.today(), taskState=0, flag=post_data.get('flag'))
+     dueDate=dueDate_parsed, taskState=0, flag=post_data.get('flag'))
     session.add(new_task)
     session.commit()
 
