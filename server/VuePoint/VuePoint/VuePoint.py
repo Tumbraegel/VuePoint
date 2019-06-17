@@ -170,12 +170,15 @@ def sqlAlchemyTasksToViewTask(tasks):
         'dueDate': task.dueDate, 'taskState': task.taskState, 'flag': task.flag})
     return viewTasks
 
-@app.route('/list/<taskId>', methods=['GET', 'DELETE', 'POST'])
+@app.route('/list/<taskId>', methods=['GET', 'DELETE', 'POST', 'PUT'])
 def single_task(taskId):
     response_object = {'status': 'success'}
     if request.method == 'DELETE':
         deleteTask(taskId)
         response_object['message'] = 'Task removed!'
+    elif request.method == 'PUT':
+        checkTaskStatus(taskId)
+        response_object['message'] = 'Task status updated!'
     elif request.method == 'POST':
         updateTask(taskId)
         response_object['message'] = 'Task updated!'
@@ -193,6 +196,25 @@ def updateTask(taskId):
 
 def getTaskBy(taskId):
     return session.query(Task).filter(Task.id==taskId).first()
+
+def checkTaskStatus(taskId): 
+    currentTask = getTaskBy(taskId)
+    if currentTask.taskState == 0:
+        markTaskAsDone(taskId)
+    else:
+        markTaskAsNotDone(taskId)
+
+def markTaskAsDone(taskId):
+    currentTask = getTaskBy(taskId)
+    if currentTask.taskState == 0:
+        currentTask.taskState = 1
+    session.commit()
+
+def markTaskAsNotDone(taskId):
+    currentTask = getTaskBy(taskId)
+    if currentTask.taskState == 1:
+        currentTask.taskState = 0
+    session.commit()
 
 @app.route('/ping', methods=['GET'])
 def ping_pong():

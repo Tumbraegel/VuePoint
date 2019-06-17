@@ -2,13 +2,15 @@
   <b-container id="home">
     <b-row class="justify-content-center">
       <add-task v-on:add-task="addTask"></add-task>
-      <week-view :taskList="taskList" v-on:del-task="deleteTask"></week-view>
+      <week-view :taskList="taskList" v-on:del-task="deleteTask"
+      v-on:compl-task="markTaskAsDone"></week-view>
     </b-row>
 
     <b-row>
       <b-col>
         <p>SECTION FOR COMPLETED TASKS</p>
-        <completed-tasks :taskList="taskList"></completed-tasks>
+        <completed-tasks :taskList="taskList" v-on:incompl-task="markTaskAsNotDone">
+        </completed-tasks>
       </b-col>
     </b-row>
 
@@ -17,6 +19,7 @@
 
 <script>
 import axios from 'axios';
+import sweetalert from 'sweetalert';
 import WeekView from './WeekView';
 import CompletedTasks from './CompletedTasks';
 import AddTask from './AddTask';
@@ -52,8 +55,7 @@ export default {
         .then(() => {
           this.getAllTasks();
           // this.show = false;
-          // eslint-disable-next-line
-        alert('New Task added');
+          sweetalert('Done!', 'Task created!', 'success', { buttons: false, timer: 1500 });
         })
         .catch((error) => {
           // eslint-disable-next-line
@@ -67,18 +69,44 @@ export default {
       axios.delete(path, id)
         .then(() => {
           this.getAllTasks();
-          // eslint-disable-next-line
-          alert('Task was deleted');
+          sweetalert('Done!', 'Task deleted!', 'success', { buttons: false, timer: 1500 });
         })
         .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
+          this.getAllTasks();
+        });
+    },
+
+    markTaskAsDone(id) {
+      const path = `http://localhost:5000/list/${id}`;
+      axios.put(path, id)
+        .then(() => {
+          this.getAllTasks();
+          sweetalert('Done!', 'Task completed!', 'success', { buttons: false, timer: 1500 });
+        })
+        .catch((error) => {
           // eslint-disable-next-line
-          alert('NOPE');
+          console.error(error);
+          this.getAllTasks();
+        });
+    },
+
+    markTaskAsNotDone(id) {
+      const path = `http://localhost:5000/list/${id}`;
+      axios.put(path, id)
+        .then(() => {
+          this.getAllTasks();
+          sweetalert('Okay!', 'Task reassigned!', 'success', { buttons: false, timer: 1500 });
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
           this.getAllTasks();
         });
     },
   },
+
   created() {
     this.getAllTasks();
     // eslint-disable-next-line

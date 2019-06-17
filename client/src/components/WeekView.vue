@@ -14,6 +14,8 @@
             </b-button>
             <h3>{{ task.title }}</h3>
             <div class="descr">{{ task.taskDescription }}</div>
+            <input type="checkbox" name="complete_checkbox"
+            v-on:change="$emit('compl-task', task.id)">
           </li>
           </ul>
         </b-col>
@@ -63,19 +65,22 @@ export default {
     },
 
     getAllTasksPer(day) {
-      return this.taskList.filter(task => task.dueDate.includes(day));
+      return this.taskList.filter(task => task.dueDate.includes(day) && task.taskState === 0);
     },
 
     getWorkTasks(day) {
-      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'work');
+      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'work'
+      && task.taskState === 0);
     },
 
     getStudyTasks(day) {
-      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'studies');
+      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'studies'
+      && task.taskState === 0);
     },
 
     getPersonalTasks(day) {
-      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'personal');
+      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'personal'
+      && task.taskState === 0);
     },
 
     getCorrectTaskboard(day) {
@@ -185,6 +190,11 @@ export default {
   }
 
   .close {
+    font-size: 1.2em;
+    padding: 1px 2px 2px;
+  }
+
+  .completed {
     font-size: 1.2em;
     padding: 1px 2px 2px;
   }

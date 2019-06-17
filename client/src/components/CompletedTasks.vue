@@ -4,6 +4,7 @@
         <div class="text-left">
           <b-list-group-item variant="secondary">Task:
             <em v-b-popover.hover.right="task.taskDescription" title="Details">{{task.title}}</em>
+            <input type="checkbox" v-on:change="$emit('incompl-task', task.id)">
             </b-list-group-item>
         </div>
       </b-list-group>
@@ -16,16 +17,11 @@ export default {
   props: ['taskList'],
   data() {
     return {
-      // showingCompleted: false,
-      done: 1,
     };
   },
   methods: {
     completedTasks() {
-      return this.taskList.filter(task => task.taskState === this.done);
-    },
-    getCompletedTasks() {
-      // stuff
+      return this.taskList.filter(task => task.taskState === 1);
     },
   },
 };

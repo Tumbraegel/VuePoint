@@ -49,8 +49,6 @@
 </template>
 
 <script>
-// import axios from 'axios';
-
 export default {
   props: ['taskList'],
   data() {
@@ -87,6 +85,7 @@ export default {
         flag: this.addTaskForm.flag,
       };
       this.$emit('add-task', payload);
+      // sweetalert('Done!', 'Task created!', 'success');
       this.initForm();
     },
 
