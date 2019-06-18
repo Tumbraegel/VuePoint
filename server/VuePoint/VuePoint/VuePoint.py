@@ -11,13 +11,13 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from marshmallow_sqlalchemy import ModelSchema
-from  flask_wtf  import  Form
-from  wtforms  import  StringField, DateField, IntegerField
-from  wtforms.validators  import  DataRequired
-from  sqlalchemy  import  create_engine, orm
-from  sqlalchemy.orm  import  sessionmaker
+from flask_wtf  import  Form
+from wtforms  import  StringField, DateField, IntegerField
+from wtforms.validators  import  DataRequired
+from sqlalchemy  import  create_engine, orm
+from sqlalchemy.orm  import  sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Integer, Column, String, Date, JSON
+from sqlalchemy import Integer, Column, String, Date
 from flask_cors import CORS
 
 app = Flask(__name__) # create the application instance :)
@@ -72,6 +72,7 @@ def close_db(error):
         g.sqlite_db.close()
 
 Base  = declarative_base()
+Base.metadata.create_all(engine)
 ma = Marshmallow(app)
 
 class Task(Base):
@@ -83,56 +84,39 @@ class Task(Base):
     taskState = Column(Integer)
     flag = Column(String)
 
-Base.metadata.create_all(engine)
-
 class TaskSchema(ma.ModelSchema):
     class Meta:
         model = Task
 
-task_schema = TaskSchema()
-tasks_schema = TaskSchema(many=True)
-
+# task_schema = TaskSchema()
 @app.route('/list', methods=['GET', 'POST'])
 def show_all_tasks():
     response_object = {'status': 'success'}
     if request.method == 'POST':
-        newTask = extractDataFromRequest()
-        addTask(newTask)
+        addTask()
         response_object['message'] = 'task added!'
+    tasks_schema = TaskSchema(many=True)
     response_object['tasks'] = tasks_schema.dump(session.query(Task))
     return jsonify(response_object)
 
-@app.route("/")
-def allTasks():
-    result = tasks_schema.dump(session.query(Task))
-    return jsonify(result)
+def addTask():
+    session.add(extractTaskDataFromRequest())
+    session.commit()
 
-def extractDataFromRequest():
+def extractTaskDataFromRequest():
     postData = request.get_json()
     title = getOrElse(postData, 'title', 'test title')
     taskDescription = getOrElse(postData, 'taskDescription', 'test description')
     dateFormat = '%Y-%m-%d'
     dueDate = getOrElse(postData, 'dueDate', date.today().strftime(dateFormat))
     flag = getOrElse(postData, 'flag', '')
-    newTask= Task(title=title, taskDescription=taskDescription, dueDate=datetime.strptime(dueDate, dateFormat), taskState=0, flag=flag)
-    return newTask
+    return Task(title=title, taskDescription=taskDescription, dueDate=datetime.strptime(dueDate, dateFormat), taskState=0, flag=flag)
 
 def getOrElse(source, attributeName, defaultValue):
     value = source.get(attributeName)
     if value == "":
         value = defaultValue
     return value
-
-def addTask(new_task):
-    session.add(new_task)
-    session.commit()
-
-def sqlAlchemyTasksToViewTask(tasks):
-    viewTasks = []
-    for task in tasks:
-        viewTasks.append({'id': task.id, 'title': task.title, 'taskDescription': task.taskDescription, 
-        'dueDate': task.dueDate, 'taskState': task.taskState, 'flag': task.flag})
-    return viewTasks
 
 @app.route('/list/<taskId>', methods=['GET', 'DELETE', 'POST', 'PUT'])
 def single_task(taskId):
@@ -141,42 +125,31 @@ def single_task(taskId):
         deleteTask(taskId)
         response_object['message'] = 'Task removed!'
     elif request.method == 'PUT':
-        checkTaskStatus(taskId)
+        updateTaskStatus(taskId)
         response_object['message'] = 'Task status updated!'
-    elif request.method == 'POST':
+    else:
         updateTask(taskId)
         response_object['message'] = 'Task updated!'
-    else:
-        response_object['tasks'] = sqlAlchemyTasksToViewTask(session.query(Task).all())
+    tasks_schema = TaskSchema(many=True)
+    response_object['tasks'] = tasks_schema.dump(session.query(Task))
     return jsonify(response_object)
 
 def deleteTask(taskId):
     session.delete(getTaskBy(taskId))
     session.commit()
 
-def updateTask(taskId):
-    deleteTask(taskId)
-    addTask(taskId)
-
 def getTaskBy(taskId):
     return session.query(Task).filter(Task.id==taskId).first()
 
-def checkTaskStatus(taskId): 
-    currentTask = getTaskBy(taskId)
-    if currentTask.taskState == 0:
-        markTaskAsDone(taskId)
-    else:
-        markTaskAsNotDone(taskId)
+def updateTask(taskId):
+    deleteTask(taskId)
+    addTask()
 
-def markTaskAsDone(taskId):
+def updateTaskStatus(taskId): 
     currentTask = getTaskBy(taskId)
     if currentTask.taskState == 0:
         currentTask.taskState = 1
-    session.commit()
-
-def markTaskAsNotDone(taskId):
-    currentTask = getTaskBy(taskId)
-    if currentTask.taskState == 1:
+    else:
         currentTask.taskState = 0
     session.commit()
 

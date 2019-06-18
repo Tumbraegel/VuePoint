@@ -20,7 +20,7 @@ For Windows:
     $ cd server
     $ conda create --name envName
     $ conda activate envName
-    (env)$ conda install --file requirements.txt
+    (env)$ conda install --file requirements.yml
     ```
     Run the server
     For windows, run the commands seperately and use set instead of export
