@@ -8,7 +8,7 @@
           </div>
 
           <ul class="tasks">
-            <li class="task" v-for="task in getCorrectTaskboard(day)" :key="task.id" v-on:click="showDetail(task.id)">
+            <li class="task" v-for="task in getCorrectTaskboard(day)" :key="task.id" v-on:click="showDetail(task.id)" @click="showDetail(task)">
             <b-button class="close" aria-label="Close" v-on:click="$emit('del-task', task.id)">
               <span aria-hidden="true">&times;</span>
             </b-button>
@@ -21,40 +21,20 @@
         </b-col>
       </b-row>
 
-      <!-- <b-modal v-model="showEdit" id="edit-modal" title="Edit Task" hide-footer>
-        <b-form @submit="editTask">
-          <label class="sr-only" for="form-input-title-edit">Title</label>
-          <b-form-input id="form-input-title-edit"
-          class="mb-2 mr-sm-2 mb-sm-0 input-field"
-          placeholder="Task Title" v-model="editTaskForm.title"
-          ></b-form-input>
-
-          <label class="sr-only" for="form-input-date-edit">Date</label>
-          <b-input-group prepend="Due on:" class="mb-2 mr-sm-2 mb-sm-0 input-field">
-          <b-input id="form-input-date-edit" type="date" v-model="editTaskForm.dueDate">
-          </b-input>
-          </b-input-group>
-
-          <label class="sr-only" for="form-input-decsription-edit">Description</label>
-          <b-form-input id="form-input-description-edit"
-          class="mb-2 mr-sm-2 mb-sm-0 input-field"
-          placeholder="Task Description" v-model="editTaskForm.taskDescription"
-          ></b-form-input>
-
-          <label class="sr-only" for="form-input-flag-edit">Flag: </label>
-          <b-input-group prepend="Flag: " class="mb-2 mr-sm-2 mb-sm-0 input-field">
-          <b-form-select id="form-input-flag-edit" class="mb-2 mr-sm-2 mb-sm-0"
-          :options = "flags" v-model="editTaskForm.flag">
-          </b-form-select></b-input-group>
-
-          <div class="modal-footer">
-            <b-button variant="secondary" id="btn-cancel" v-on:click="hideModal">
-            Cancel</b-button>
-            <b-button type="submit" variant="primary" id="btn-save" @click="hideModal">
-            Save</b-button>
+			<b-row class="justify-content-center detail-modal">
+        <b-modal v-model="showModal" title="Task Detail" hide-footer>
+          <div class="modal-body">
+            <h4>{{ taskDetail.title }} </h4> 
+            <p>Due date: {{ taskDetail.dueDate }}</p>
+            <p>Description: {{ taskDetail.taskDescription }}</p>
+            <p>Flag: {{ taskDetail.flag }}</p>
           </div>
-        </b-form>
-      </b-modal> -->
+          <div class="modal-footer">
+            <b-button variant="secondary" id="btn-cancel" v-on:click="showModal =!showModal">
+            Cancel</b-button>
+          </div>
+        </b-modal>
+			</b-row>
 
       <b-row class="justify-content-center flag-btn">
          <b-button variant="outline-warning" size="sm" @click="setCategory('work')">
@@ -84,36 +64,26 @@ export default {
   data() {
     return {
       showModal: false,
-      isEditing: false,
       weekdays: [],
       showAllTasks: true,
       showWorkTasks: false,
       showPersonalTasks: false,
       showStudyTasks: false,
+      taskDetail: {
+        title: '',
+        dueDate: '',
+        taskDescrition: '',
+        flag: '',
+      }
     };
   },
 
   methods: {
-    showDetail(id) {
-      // some code
-    },
-
-   /*  hideModal() {
-      this.showEdit = false;
-    },
-
-    editTask(evt) {
-      evt.preventDefault();
-      const payload = {
-        title: this.editTaskForm.title,
-        dueDate: this.editTaskForm.dueDate,
-        taskDescription: this.editTaskForm.taskDescription,
-        flag: this.editTaskForm.flag,
-      };
-      this.$emit('edit-task', payload, this.editTaskForm.id);
-      this.initForm();
-    },
- */
+    showDetail(task) {
+      this.showModal = true;
+      this.taskDetail = task;
+		},
+		
     getThisWeekDates() {
       for (let i = 1; i <= 7; i += 1) {
         this.weekdays.push(moment().day(i).format('ddd, DD MMM'));
@@ -259,7 +229,7 @@ box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
   font-weight: 400;
   line-height: 0.5;
   padding-bottom: 5px;
-  text-shadow: 1px 1px 2px grey; 
+  text-shadow: 1px 1px 2px grey;
   position: absolute;
 }
 
@@ -280,5 +250,14 @@ h3 {
 
 .flag-btn button {
   margin-right: 0.5em;
+}
+
+.modal-body {
+  text-align: center;
+  padding: 0.5em;
+}
+
+h4 {
+  font-size: 1.5em;
 }
 </style>
