@@ -8,13 +8,14 @@
           </div>
 
           <ul class="tasks">
-            <li class="task" v-for="task in getCorrectTaskboard(day)" :key="task.id"
-            v-on:click="showDetail(task.id)" @click="showDetail(task)">
+            <li class="task" v-for="task in getCorrectTaskboard(day)" :key="task.id">
             <b-button class="close" aria-label="Close" v-on:click="$emit('del-task', task.id)">
               <span aria-hidden="true">&times;</span>
             </b-button>
-            <h3>{{ task.title }}</h3>
-            <div class="descr">{{ task.taskDescription }}</div>
+            <h3 v-on:click="showDetail(task.id)">{{ task.title }}</h3>
+            <div class="descr" v-on:click="showDetail(task.id)">
+              {{ task.taskDescription }}
+            </div>
             <input type="checkbox" name="complete_checkbox"
             v-on:change="$emit('compl-task', task.id)">
           </li>
@@ -24,10 +25,11 @@
       <b-row class="justify-content-center detail-modal">
         <b-modal v-model="showModal" title="Task Detail" hide-footer>
           <div class="modal-body">
-            <h4>{{ taskDetail.title }} </h4>
-            <p>Due date: {{ taskDetail.dueDate }}</p>
-            <p>Description: {{ taskDetail.taskDescription }}</p>
-            <p>Flag: {{ taskDetail.flag }}</p>
+            <h4>{{ taskDetail.title }}</h4>
+            <p>Due on {{ taskDetail.dueDate }}
+              <b-button class="flag" variant="outline-warning" size="sm">{{ taskDetail.flag }}</b-button>
+            </p>
+            <h5>Description:</h5><p>{{ taskDetail.taskDescription }}</p>
           </div>
           <div class="modal-footer">
             <b-button variant="secondary" id="btn-cancel" v-on:click="showModal =!showModal">
@@ -71,7 +73,7 @@ export default {
       taskDetail: {
         title: '',
         dueDate: '',
-        taskDescrition: '',
+        taskDescription: '',
         flag: '',
       },
     };
@@ -79,9 +81,14 @@ export default {
 
   methods: {
     showDetail(task) {
+      console.log(task.id);
       this.showModal = true;
-      this.taskDetail = task;
+      this.taskDetail.title = task.title;
+      this.taskDetail.dueDate = moment(task.dueDate).format('ddd, DD MMM');
+      this.taskDetail.taskDescription = task.taskDescription;
+      this.taskDetail.flag = task.flag;
     },
+
     getThisWeekDates() {
       for (let i = 1; i <= 7; i += 1) {
         this.weekdays.push(moment().day(i).format('YYYY-MM-DD'));
@@ -257,5 +264,9 @@ h3 {
 
 h4 {
   font-size: 1.5em;
+}
+
+.flag {
+  margin-left: 0.5em;
 }
 </style>
