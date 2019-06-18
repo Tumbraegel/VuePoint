@@ -8,7 +8,7 @@
           </div>
 
           <ul class="tasks">
-            <li id="task" v-for="task in getCorrectTaskboard(day)" :key="task.id" v-on:click="showModal(task)">
+            <li class="task" v-for="task in getCorrectTaskboard(day)" :key="task.id" v-on:click="showDetail(task.id)">
             <b-button class="close" aria-label="Close" v-on:click="$emit('del-task', task.id)">
               <span aria-hidden="true">&times;</span>
             </b-button>
@@ -21,7 +21,7 @@
         </b-col>
       </b-row>
 
-      <b-modal v-model="showEdit" id="edit-modal" title="Edit Task" hide-footer>
+      <!-- <b-modal v-model="showEdit" id="edit-modal" title="Edit Task" hide-footer>
         <b-form @submit="editTask">
           <label class="sr-only" for="form-input-title-edit">Title</label>
           <b-form-input id="form-input-title-edit"
@@ -54,7 +54,7 @@
             Save</b-button>
           </div>
         </b-form>
-      </b-modal>
+      </b-modal> -->
 
       <b-row class="justify-content-center flag-btn">
          <b-button variant="outline-warning" size="sm" @click="setCategory('work')">
@@ -83,7 +83,7 @@ export default {
   props: ['taskList'],
   data() {
     return {
-      showEdit: false,
+      showModal: false,
       isEditing: false,
       weekdays: [],
       showAllTasks: true,
@@ -94,12 +94,11 @@ export default {
   },
 
   methods: {
-    showModal(task) {
-      this.showEdit = true;
-      this.editTaskForm = task;
+    showDetail(id) {
+      // some code
     },
 
-    hideModal() {
+   /*  hideModal() {
       this.showEdit = false;
     },
 
@@ -114,7 +113,7 @@ export default {
       this.$emit('edit-task', payload, this.editTaskForm.id);
       this.initForm();
     },
-
+ */
     getThisWeekDates() {
       for (let i = 1; i <= 7; i += 1) {
         this.weekdays.push(moment().day(i).format('ddd, DD MMM'));
