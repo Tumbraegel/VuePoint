@@ -2,7 +2,7 @@
   <b-container id="home">
     <b-row class="justify-content-center">
       <add-task v-on:add-task="addTask"></add-task>
-      <week-view :taskList="taskList" v-on:del-task="deleteTask"
+      <week-view :taskList="taskList" v-on:del-task="deleteTask" v-on:edit-task="editTask"
       v-on:compl-task="markTaskAsDone"></week-view>
     </b-row>
 
@@ -62,6 +62,18 @@ export default {
           console.log(error);
           this.getAllTasks();
         });
+    },
+
+    editTask(payload, id) {
+      const path = `http://localhost:5000/list/${id}`;
+      axios.put(path, payload)
+      .then(() => {
+        this.getAllTasks();
+      })
+      .catch((error) => {
+        console.error(error);
+        this.getAllTasks();
+      })
     },
 
     deleteTask(id) {
