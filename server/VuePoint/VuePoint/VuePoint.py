@@ -8,10 +8,13 @@ from datetime import datetime
 from datetime import date
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
+from marshmallow_sqlalchemy import ModelSchema
 from  flask_wtf  import  Form
 from  wtforms  import  StringField, DateField, IntegerField
 from  wtforms.validators  import  DataRequired
-from  sqlalchemy  import  create_engine
+from  sqlalchemy  import  create_engine, orm
 from  sqlalchemy.orm  import  sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Integer, Column, String, Date, JSON
@@ -69,49 +72,7 @@ def close_db(error):
         g.sqlite_db.close()
 
 Base  = declarative_base()
-
-mock_tasks =[
-{
-    'id': '1',
-    'title': 'Office Party',
-    'dueDate': 'Friday',
-    'taskDescription': 'Buy Cookies',
-    # importance: 'high',
-    'taskState': '1',
-    },
-    {
-    'id': '2',
-    'title': 'Ticket #25',
-    'dueDate': 'Tuesday',
-    'taskDescription': 'Needs to be done ASAP',
-    # importance: 'high',
-    'taskState': '0',
-    },
-    {
-    'id': '3',
-    'title': 'Grocery Shopping',
-    'dueDate': 'Weekend',
-    'taskDescription': '@fancy supermarket',
-    # importance: 'low',
-    'taskState': '0',
-    },
-    {
-    'id': '4',
-    'title': 'Sprint 34 Deadline',
-    'dueDate': 'Wednesday',
-    'taskDescription': 'To-Do: Tickets #73, #75, #79',
-    # importance: 'high',
-    'taskState': '0',
-    },
-    {
-    'id': '5',
-    'title': 'Sprint Review',
-    'dueDate': 'Wednesday',
-    'taskDescription': 'Having an existential crisis',
-    # important: 'high',
-    'taskState': '0',
-    }
-]
+ma = Marshmallow(app)
 
 class Task(Base):
     __tablename__ = 'tasks'
@@ -124,6 +85,13 @@ class Task(Base):
 
 Base.metadata.create_all(engine)
 
+class TaskSchema(ma.ModelSchema):
+    class Meta:
+        model = Task
+
+task_schema = TaskSchema()
+tasks_schema = TaskSchema(many=True)
+
 @app.route('/list', methods=['GET', 'POST'])
 def show_all_tasks():
     response_object = {'status': 'success'}
@@ -131,9 +99,13 @@ def show_all_tasks():
         newTask = extractDataFromRequest()
         addTask(newTask)
         response_object['message'] = 'task added!'
-    else:
-        response_object['tasks'] = sqlAlchemyTasksToViewTask(session.query(Task).all())
+    response_object['tasks'] = tasks_schema.dump(session.query(Task))
     return jsonify(response_object)
+
+@app.route("/")
+def allTasks():
+    result = tasks_schema.dump(session.query(Task))
+    return jsonify(result)
 
 def extractDataFromRequest():
     postData = request.get_json()
@@ -150,14 +122,6 @@ def getOrElse(source, attributeName, defaultValue):
     if value == "":
         value = defaultValue
     return value
-
-@app.route('/add', methods=['POST'])
-def add_task():
-    response_object = {'status': 'success'}
-    newTask = extractDataFromRequest()
-    addTask(newTask)
-    response_object['message'] = 'task added!'
-    return jsonify(response_object)
 
 def addTask(new_task):
     session.add(new_task)

@@ -109,8 +109,6 @@ export default {
 
   created() {
     this.getAllTasks();
-    // eslint-disable-next-line
-    console.log('created')
   },
 };
 </script>

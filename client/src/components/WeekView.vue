@@ -59,7 +59,7 @@ export default {
   methods: {
     getThisWeekDates() {
       for (let i = 1; i <= 7; i += 1) {
-        this.weekdays.push(moment().day(i).format('ddd, DD MMM'));
+        this.weekdays.push(moment().day(i).format('YYYY-MM-DD'));
       }
       return this.weekdays;
     },
