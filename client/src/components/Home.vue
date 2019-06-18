@@ -2,10 +2,9 @@
   <b-container id="home">
     <b-row class="justify-content-center">
       <add-task v-on:add-task="addTask"></add-task>
-      <week-view :taskList="taskList" v-on:del-task="deleteTask" 
-			v-on:compl-task="markTaskAsDone"></week-view>
-    </b-row>
-
+      <week-view :taskList="taskList" v-on:del-task="deleteTask"
+      v-on:compl-task="markTaskAsDone"></week-view>
+      </b-row>
     <b-row>
       <b-col>
         <p>SECTION FOR COMPLETED TASKS</p>

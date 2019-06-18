@@ -2,7 +2,6 @@
     <div id="task-modal">
       <b-button class="add-btn" variant="outline-primary" size="sm"
       v-on:click="show = !show">&plus; Add new task</b-button>
-     
       <b-modal v-model="show" id="add-modal" title="New Task" hide-footer>
         <b-form @submit="onSubmit">
           <label class="sr-only" for="form-input-title">Title</label>

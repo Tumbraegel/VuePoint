@@ -8,7 +8,8 @@
           </div>
 
           <ul class="tasks">
-            <li class="task" v-for="task in getCorrectTaskboard(day)" :key="task.id" v-on:click="showDetail(task.id)" @click="showDetail(task)">
+            <li class="task" v-for="task in getCorrectTaskboard(day)" :key="task.id"
+            v-on:click="showDetail(task.id)" @click="showDetail(task)">
             <b-button class="close" aria-label="Close" v-on:click="$emit('del-task', task.id)">
               <span aria-hidden="true">&times;</span>
             </b-button>
@@ -20,11 +21,10 @@
           </ul>
         </b-col>
       </b-row>
-
-			<b-row class="justify-content-center detail-modal">
+      <b-row class="justify-content-center detail-modal">
         <b-modal v-model="showModal" title="Task Detail" hide-footer>
           <div class="modal-body">
-            <h4>{{ taskDetail.title }} </h4> 
+            <h4>{{ taskDetail.title }} </h4>
             <p>Due date: {{ taskDetail.dueDate }}</p>
             <p>Description: {{ taskDetail.taskDescription }}</p>
             <p>Flag: {{ taskDetail.flag }}</p>
@@ -34,8 +34,7 @@
             Cancel</b-button>
           </div>
         </b-modal>
-			</b-row>
-
+      </b-row>
       <b-row class="justify-content-center flag-btn">
          <b-button variant="outline-warning" size="sm" @click="setCategory('work')">
         Work
@@ -74,7 +73,7 @@ export default {
         dueDate: '',
         taskDescrition: '',
         flag: '',
-      }
+      },
     };
   },
 
@@ -82,8 +81,7 @@ export default {
     showDetail(task) {
       this.showModal = true;
       this.taskDetail = task;
-		},
-		
+    },
     getThisWeekDates() {
       for (let i = 1; i <= 7; i += 1) {
         this.weekdays.push(moment().day(i).format('YYYY-MM-DD'));
