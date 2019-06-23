@@ -12,7 +12,7 @@
             <b-button class="close" aria-label="Close" v-on:click="$emit('del-task', task.id)">
               <span aria-hidden="true">&times;</span>
             </b-button>
-            <h3 v-on:click="showDetail(task.id)">{{ task.title }}</h3>
+            <h3 v-on:click="showDetail(task)">{{ task.title }}</h3>
             <div class="descr" v-on:click="showDetail(task.id)">
               {{ task.taskDescription }}
             </div>
@@ -31,7 +31,7 @@
             </p>
             <h5>Description:</h5><p>{{ taskDetail.taskDescription }}</p>
             <p>Done? <input type="checkbox" name="complete_checkbox"
-            v-on:change="markDone(task.id)"></p>
+            v-on:change="markDone(taskDetail.id)"></p>
           </div>
           <div class="modal-footer">
             <b-button variant="danger" id="btn-edit" v-on:click="editTask">Edit</b-button>
@@ -41,16 +41,16 @@
         </b-modal>
       </b-row>
       <b-row class="justify-content-center flag-btn">
-         <b-button variant="outline-warning" size="sm" @click="setCategory('work')">
+         <b-button variant="outline-warning" size="sm" :class="{ active: showWorkTasks }" @click="setCategory('work')">
         Work
         </b-button>
-        <b-button variant="outline-warning" size="sm" @click="setCategory('studies')">
+        <b-button variant="outline-warning" size="sm" :class="{ active: showStudyTasks }" @click="setCategory('studies')">
           Studies
-        </b-button>
-        <b-button variant="outline-warning" size="sm" @click="setCategory('personal')">
+        </b-button> 
+        <b-button variant="outline-warning" size="sm" :class="{ active: showPersonalTasks }" @click="setCategory('personal')">
           Personal
         </b-button>
-        <b-button v-if="!showAllTasks" variant="outline-warning" size="sm"
+        <b-button v-if="!showAllTasks" variant="outline-warning" size="sm" :class="{ active: showAllTasks }"
         @click="setCategory('all')">
         All
         </b-button>
@@ -74,18 +74,23 @@ export default {
       showPersonalTasks: false,
       showStudyTasks: false,
       taskDetail: {
+        id: '',
         title: '',
         dueDate: '',
         taskDescription: '',
         flag: '',
       },
+      allActive: false,
+      workActive: false,
+      studiesActive: false,
+      personalActive: false,
     };
   },
 
   methods: {
     showDetail(task) {
-      console.log('works?');
       this.showModal = true;
+      this.taskDetail.id = task.id;
       this.taskDetail.title = task.title;
       this.taskDetail.dueDate = task.dueDate;
       this.taskDetail.taskDescription = task.taskDescription;
@@ -267,7 +272,7 @@ h3 {
 
 .modal-body {
   text-align: center;
-  padding: 0.5em;
+  padding: 0 !important;
 }
 
 h4 {
