@@ -5,9 +5,9 @@
       <week-view :taskList="taskList" v-on:del-task="deleteTask"
       v-on:compl-task="markTaskAsDone"></week-view>
       </b-row>
-    <b-row>
+    <b-row class="completed">
       <b-col>
-        <p>SECTION FOR COMPLETED TASKS</p>
+        <p>COMPLETED TASKS</p>
         <completed-tasks :taskList="taskList" v-on:incompl-task="markTaskAsNotDone">
         </completed-tasks>
       </b-col>
@@ -115,5 +115,9 @@ export default {
 <style scoped>
 .row {
   margin: 2em 0;
+}
+
+.completed {
+  text-align: center;
 }
 </style>

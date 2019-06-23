@@ -4,7 +4,7 @@
         <div class="text-left">
           <b-list-group-item variant="secondary">Task:
             <em v-b-popover.hover.right="task.taskDescription" title="Details">{{task.title}}</em>
-            <input type="checkbox" v-on:change="$emit('incompl-task', task.id)">
+            <input checked type="checkbox" v-on:change="$emit('incompl-task', task.id)">
             </b-list-group-item>
         </div>
       </b-list-group>

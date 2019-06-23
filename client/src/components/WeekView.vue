@@ -17,7 +17,7 @@
               {{ task.taskDescription }}
             </div>
             <input type="checkbox" name="complete_checkbox"
-            v-on:change="$emit('compl-task', task.id)">
+            v-on:change="markDone(task.id)">
           </li>
           </ul>
         </b-col>
@@ -30,8 +30,11 @@
               <b-button class="flag" variant="outline-warning" size="sm">{{ taskDetail.flag }}</b-button>
             </p>
             <h5>Description:</h5><p>{{ taskDetail.taskDescription }}</p>
+            <p>Done? <input type="checkbox" name="complete_checkbox"
+            v-on:change="markDone(task.id)"></p>
           </div>
           <div class="modal-footer">
+            <b-button variant="danger" id="btn-edit" v-on:click="editTask">Edit</b-button>
             <b-button variant="secondary" id="btn-cancel" v-on:click="showModal =!showModal">
             Cancel</b-button>
           </div>
@@ -81,12 +84,17 @@ export default {
 
   methods: {
     showDetail(task) {
-      console.log(task.id);
+      console.log('works?');
       this.showModal = true;
       this.taskDetail.title = task.title;
-      this.taskDetail.dueDate = moment(task.dueDate).format('ddd, DD MMM');
+      this.taskDetail.dueDate = task.dueDate;
       this.taskDetail.taskDescription = task.taskDescription;
       this.taskDetail.flag = task.flag;
+    },
+
+    markDone(id) {
+      this.$emit('compl-task', id);
+      this.showModal = false;
     },
 
     getThisWeekDates() {

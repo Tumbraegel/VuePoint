@@ -1,14 +1,15 @@
 <template>
     <div id="task-modal">
       <b-button class="add-btn" variant="outline-primary" size="sm"
-      v-on:click="show = !show">&plus; Add new task</b-button>
+      v-on:click="openModal">&plus; Add new task</b-button>
       <b-modal v-model="show" id="add-modal" title="New Task" hide-footer>
         <b-form @submit="onSubmit">
           <label class="sr-only" for="form-input-title">Title</label>
-          <b-form-input id="form-input-title"
+          <b-form-input v-bind:class="{ 'warning': isEmpty }" id="form-input-title"
           class="mb-2 mr-sm-2 mb-sm-0 input-field"
           placeholder="Task Title" v-model="addTaskForm.title"
           ></b-form-input>
+          <p class="error" v-if="error">{{ error }}</p>
 
           <label class="sr-only" for="form-input-date">Date</label>
           <b-input-group prepend="Due on:" class="mb-2 mr-sm-2 mb-sm-0 input-field">
@@ -31,7 +32,7 @@
           <div class="modal-footer" id="btn">
             <b-button variant="secondary" id="btn-cancel" v-on:click="show =!show">
             Cancel</b-button>
-            <b-button type="submit" variant="primary" id="btn-create" v-on:click="show =!show">
+            <b-button type="submit" variant="primary" id="btn-create">
             Add Task</b-button>
         </div>
       </b-form>
@@ -48,9 +49,9 @@ export default {
     return {
       show: false,
       flags: [
-        { value: 'work', text: 'Work' },
-        { value: 'personal', text: 'Personal' },
-        { value: 'studies', text: 'Studies' },
+        { value: 'Work', text: 'Work' },
+        { value: 'Personal', text: 'Personal' },
+        { value: 'Studies', text: 'Studies' },
       ],
       addTaskForm: {
         title: '',
@@ -58,10 +59,21 @@ export default {
         dueDate: '',
         flag: '',
       },
+      error: '',
+      isEmpty: false
     };
   },
 
   methods: {
+    openModal() {
+      if (this.error) {
+        this.error = '';
+        this.isEmpty = false;
+        this.show = true;
+      }
+      this.show = true;
+    },
+
     initForm() {
       this.addTaskForm.title = '';
       this.addTaskForm.taskDescription = '';
@@ -71,14 +83,22 @@ export default {
 
     onSubmit(evt) {
       evt.preventDefault();
-      const payload = {
+      if (this.addTaskForm.title == '') {
+        this.error = 'Please enter a title';
+        this.isEmpty = true;
+      }
+      else {
+        const payload = {
         title: this.addTaskForm.title,
         taskDescription: this.addTaskForm.taskDescription,
         dueDate: this.addTaskForm.dueDate,
         flag: this.addTaskForm.flag,
-      };
-      this.$emit('add-task', payload);
-      this.initForm();
+        };
+        this.$emit('add-task', payload);
+        this.error = '';
+        this.initForm();
+        this.show = false;
+      }
     },
 
     onReset(evt) {
@@ -91,7 +111,7 @@ export default {
       // eslint-disable-next-line
       console.log('created');
     },
-  },
+  }
 };
 </script>
 
@@ -115,5 +135,54 @@ export default {
     margin-top: 2em;
     text-align: right;
     padding-bottom: 0;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateX(0px);
+    timing-function: ease-in;
+  }
+  37% {
+    transform: translateX(5px);
+    timing-function: ease-out;
+  }
+  55% {
+    transform: translateX(-5px);
+    timing-function: ease-in;
+  }
+  73% {
+    transform: translateX(4px);
+    timing-function: ease-out;
+  }
+  82% {
+    transform: translateX(-4px);
+    timing-function: ease-in;
+  }
+  91% {
+    transform: translateX(2px);
+    timing-function: ease-out;
+  }
+  96% {
+    transform: translateX(-2px);
+    timing-function: ease-in;
+  }
+  100% {
+    transform: translateX(0px);
+    timing-function: ease-in;
+  }
+}
+
+.warning {
+  border-color: red;
+  animation-name: bounce;
+  animation-duration: .5s;
+  animation-delay: 0.25s;
+}
+
+.error {
+  color: red;
+  animation-name: bounce;
+  animation-duration: .5s;
+  animation-delay: 0.25s;
 }
 </style>
