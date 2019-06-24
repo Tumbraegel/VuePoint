@@ -22,38 +22,75 @@
           </ul>
         </b-col>
       </b-row>
-      <b-row class="justify-content-center detail-modal">
-        <b-modal v-model="showModal" title="Task Detail" hide-footer>
-          <div class="modal-body">
-            <h4>{{ taskDetail.title }}</h4>
-            <p>Due on {{ taskDetail.dueDate }}
-              <b-button class="flag" variant="outline-warning" size="sm">{{ taskDetail.flag }}</b-button>
-            </p>
-            <h5>Description:</h5><p>{{ taskDetail.taskDescription }}</p>
-            <p>Done? <input type="checkbox" name="complete_checkbox"
-            v-on:change="markDone(taskDetail.id)"></p>
-          </div>
+
+      <b-modal v-model="showDetailModal" title="Task Detail" hide-footer>
+        <div class="modal-body">
+          <h4>{{ taskDetail.title }}</h4>
+          <p>Due on {{ taskDetail.dueDate }}
+            <b-button class="flag" variant="outline-warning"
+            size="sm">{{ taskDetail.flag }}</b-button>
+          </p>
+          <h5>Description:</h5><p>{{ taskDetail.taskDescription }}</p>
+          <p>Done? <input type="checkbox" name="complete_checkbox"
+          v-on:change="markDone(taskDetail.id)"></p>
+        </div>
+        <div class="modal-footer">
+          <b-button variant="danger" id="btn-edit"
+          v-on:click="openEditModal(taskDetail)">Edit</b-button>
+          <b-button variant="secondary" id="btn-cancel"
+          v-on:click="showDetailModal = !showDetailModal">
+          Cancel</b-button>
+        </div>
+      </b-modal>
+
+      <b-modal v-model="showEditModal" title="Edit Task" hide-footer>
+        <b-form @submit="onSubmit">
+          <label class="sr-only" for="form-edit-title">Title</label>
+          <b-form-input v-bind:class="{ 'warning': isEmpty }" id="form-edit-title"
+          class="mb-2 mr-sm-2 mb-sm-0 input-field"
+          placeholder="Task Title" v-model="editTaskForm.title"
+          ></b-form-input>
+          <p class="error" v-if="error">{{ error }}</p>
+
+          <label class="sr-only" for="form-edit-date">Date</label>
+          <b-input-group prepend="Due on:" class="mb-2 mr-sm-2 mb-sm-0 input-field">
+          <b-input id="form-edit-date" type="date" v-model="editTaskForm.dueDate">
+          </b-input>
+          </b-input-group>
+
+          <label class="sr-only" for="form-edit-decsription">Description</label>
+          <b-form-input id="form-edit-description"
+          class="mb-2 mr-sm-2 mb-sm-0 input-field"
+          placeholder="Task Description" v-model="editTaskForm.taskDescription"
+          ></b-form-input>
+
+          <label class="sr-only" for="form-edit-flag">Flag: </label>
+          <b-input-group prepend="Flag: " class="mb-2 mr-sm-2 mb-sm-0 input-field">
+          <b-form-select id="form-edit-flag" class="mb-2 mr-sm-2 mb-sm-0"
+          :options = "flags" v-model="editTaskForm.flag">
+          </b-form-select></b-input-group>
           <div class="modal-footer">
-            <b-button variant="danger" id="btn-edit" v-on:click="editTask">Edit</b-button>
-            <b-button variant="secondary" id="btn-cancel" v-on:click="showModal =!showModal">
-            Cancel</b-button>
+            <b-button variant="success" type="submit" id="btn-edit"
+            v-on:click="showEditModal = !showEditModal">Save</b-button>
+            <b-button variant="secondary" id="btn-cancel"
+            v-on:click="showEditModal = !showEditModal">Cancel</b-button>
           </div>
-        </b-modal>
-      </b-row>
+        </b-form>
+      </b-modal>
+
       <b-row class="justify-content-center flag-btn">
-         <b-button variant="outline-warning" size="sm" :class="{ active: showWorkTasks }" @click="setCategory('work')">
-        Work
-        </b-button>
-        <b-button variant="outline-warning" size="sm" :class="{ active: showStudyTasks }" @click="setCategory('studies')">
-          Studies
-        </b-button> 
-        <b-button variant="outline-warning" size="sm" :class="{ active: showPersonalTasks }" @click="setCategory('personal')">
-          Personal
-        </b-button>
-        <b-button v-if="!showAllTasks" variant="outline-warning" size="sm" :class="{ active: showAllTasks }"
-        @click="setCategory('all')">
-        All
-        </b-button>
+         <b-button variant="outline-warning" size="sm"
+         :class="{ active: showWorkTasks }"
+         @click="setCategory('work')">Work</b-button>
+        <b-button variant="outline-warning" size="sm"
+        :class="{ active: showStudyTasks }"
+        @click="setCategory('studies')">Studies</b-button>
+        <b-button variant="outline-warning" size="sm"
+        :class="{ active: showPersonalTasks }"
+        @click="setCategory('personal')">Personal</b-button>
+        <b-button v-if="!showAllTasks" variant="outline-warning" size="sm"
+        :class="{ active: showAllTasks }"
+        @click="setCategory('all')">All</b-button>
       </b-row>
 
     </b-container>
@@ -67,7 +104,8 @@ export default {
   props: ['taskList'],
   data() {
     return {
-      showModal: false,
+      showDetailModal: false,
+      showEditModal: false,
       weekdays: [],
       showAllTasks: true,
       showWorkTasks: false,
@@ -80,6 +118,20 @@ export default {
         taskDescription: '',
         flag: '',
       },
+      editTaskForm: {
+        id: '',
+        title: '',
+        dueDate: '',
+        taskDescription: '',
+        flag: '',
+      },
+      flags: [
+        { value: 'Work', text: 'Work' },
+        { value: 'Personal', text: 'Personal' },
+        { value: 'Studies', text: 'Studies' },
+      ],
+      error: '',
+      isEmpty: false,
       allActive: false,
       workActive: false,
       studiesActive: false,
@@ -89,7 +141,7 @@ export default {
 
   methods: {
     showDetail(task) {
-      this.showModal = true;
+      this.showDetailModal = true;
       this.taskDetail.id = task.id;
       this.taskDetail.title = task.title;
       this.taskDetail.dueDate = task.dueDate;
@@ -99,7 +151,37 @@ export default {
 
     markDone(id) {
       this.$emit('compl-task', id);
-      this.showModal = false;
+      this.showDetailModal = false;
+    },
+
+    openEditModal(taskDetail) {
+      this.showDetailModal = false;
+      this.showEditModal = true;
+      this.editTaskForm.id = taskDetail.id;
+      this.editTaskForm.title = taskDetail.title;
+      this.editTaskForm.dueDate = taskDetail.dueDate;
+      this.editTaskForm.taskDescription = taskDetail.taskDescription;
+      this.editTaskForm.flag = taskDetail.taskDescription;
+    },
+
+    onSubmit(evt) {
+      evt.preventDefault();
+      if (this.editTaskForm.title === '') {
+        this.error = 'Please enter a title';
+        this.isEmpty = true;
+      } else {
+        const payload = {
+          id: this.editTaskForm.id,
+          title: this.editTaskForm.title,
+          taskDescription: this.editTaskForm.taskDescription,
+          dueDate: this.editTaskForm.dueDate,
+          flag: this.editTaskForm.flag,
+        };
+        this.$emit('edit-task', payload);
+        this.error = '';
+        this.initForm();
+        this.showEditModal = false;
+      }
     },
 
     getThisWeekDates() {
@@ -114,17 +196,17 @@ export default {
     },
 
     getWorkTasks(day) {
-      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'work'
+      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'Work'
       && task.taskState === 0);
     },
 
     getStudyTasks(day) {
-      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'studies'
+      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'Studies'
       && task.taskState === 0);
     },
 
     getPersonalTasks(day) {
-      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'personal'
+      return this.taskList.filter(task => task.dueDate.includes(day) && task.flag === 'Personal'
       && task.taskState === 0);
     },
 

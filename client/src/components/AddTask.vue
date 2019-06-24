@@ -60,7 +60,7 @@ export default {
         flag: '',
       },
       error: '',
-      isEmpty: false
+      isEmpty: false,
     };
   },
 
@@ -83,16 +83,15 @@ export default {
 
     onSubmit(evt) {
       evt.preventDefault();
-      if (this.addTaskForm.title == '') {
+      if (this.addTaskForm.title === '') {
         this.error = 'Please enter a title';
         this.isEmpty = true;
-      }
-      else {
+      } else {
         const payload = {
-        title: this.addTaskForm.title,
-        taskDescription: this.addTaskForm.taskDescription,
-        dueDate: this.addTaskForm.dueDate,
-        flag: this.addTaskForm.flag,
+          title: this.addTaskForm.title,
+          taskDescription: this.addTaskForm.taskDescription,
+          dueDate: this.addTaskForm.dueDate,
+          flag: this.addTaskForm.flag,
         };
         this.$emit('add-task', payload);
         this.error = '';
@@ -111,11 +110,11 @@ export default {
       // eslint-disable-next-line
       console.log('created');
     },
-  }
+  },
 };
 </script>
 
-<style scoped>
+<style>
 #task-modal {
     text-align: center;
 }

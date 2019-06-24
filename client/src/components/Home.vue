@@ -3,7 +3,7 @@
     <b-row class="justify-content-center">
       <add-task v-on:add-task="addTask"></add-task>
       <week-view :taskList="taskList" v-on:del-task="deleteTask"
-      v-on:compl-task="markTaskAsDone"></week-view>
+      v-on:compl-task="markTaskAsDone" v-on:edit-task="editTask"></week-view>
       </b-row>
     <b-row class="completed">
       <b-col>
@@ -73,6 +73,23 @@ export default {
         .catch((error) => {
           // eslint-disable-next-line
           console.error(error);
+          this.getAllTasks();
+        });
+    },
+
+    editTask(payload) {
+      const id = payload.id;
+      const pathDel = `http://localhost:5000/list/${id}`;
+      axios.delete(pathDel, id);
+      const pathAdd = 'http://localhost:5000/list';
+      axios.post(pathAdd, payload)
+        .then(() => {
+          this.getAllTasks();
+          sweetalert('Done!', 'Task updated!', 'success', { buttons: false, timer: 1500 });
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.log(error);
           this.getAllTasks();
         });
     },
