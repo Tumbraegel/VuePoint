@@ -111,7 +111,7 @@ def getOrElse(source, attributeName, defaultValue):
         value = defaultValue
     return value
 
-@app.route('/list/<taskId>', methods=['GET', 'DELETE', 'POST', 'PUT'])
+@app.route('/list/<taskId>', methods=['DELETE', 'POST', 'PUT'])
 def single_task(taskId):
     response_object = {'status': 'success'}
     if request.method == 'DELETE':

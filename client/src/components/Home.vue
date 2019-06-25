@@ -8,7 +8,7 @@
     <b-row class="completed">
       <b-col>
         <p>COMPLETED TASKS</p>
-        <completed-tasks :taskList="taskList" v-on:incompl-task="markTaskAsNotDone">
+        <completed-tasks :taskList="taskList" v-on:incompl-task="editTask">
         </completed-tasks>
       </b-col>
     </b-row>
@@ -98,20 +98,6 @@ export default {
         .then(() => {
           this.getAllTasks();
           sweetalert('Done!', 'Task completed!', 'success', { buttons: false, timer: 1500 });
-        })
-        .catch((error) => {
-          // eslint-disable-next-line
-          console.error(error);
-          this.getAllTasks();
-        });
-    },
-
-    markTaskAsNotDone(id) {
-      const path = `http://localhost:5000/list/${id}`;
-      axios.put(path, id)
-        .then(() => {
-          this.getAllTasks();
-          sweetalert('Okay!', 'Task reassigned!', 'success', { buttons: false, timer: 1500 });
         })
         .catch((error) => {
           // eslint-disable-next-line
