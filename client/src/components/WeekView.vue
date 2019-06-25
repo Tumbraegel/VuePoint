@@ -13,7 +13,7 @@
               <span aria-hidden="true">&times;</span>
             </b-button>
             <h3 v-on:click="showDetail(task)">{{ task.title }}</h3>
-            <div class="descr" v-on:click="showDetail(task.id)">
+            <div class="descr" v-on:click="showDetail(task)">
               {{ task.taskDescription }}
             </div>
             <input type="checkbox" name="complete_checkbox"

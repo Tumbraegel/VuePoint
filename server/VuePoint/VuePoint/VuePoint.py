@@ -20,14 +20,13 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Integer, Column, String, Date
 from flask_cors import CORS
 
-app = Flask(__name__) # create the application instance :)
-app.config.from_object(__name__) # load config from this file , vuepoint.py
+app = Flask(__name__) 
+app.config.from_object(__name__) 
 
 engine = create_engine('sqlite:///vuePoint.db', connect_args={'check_same_thread': False})
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# enable CORS //https://testdriven.io/blog/developing-a-single-page-app-with-flask-and-vuejs/
 CORS(app, resources={r'/*': {'origins': '*'}})
 
 # Load default config and override config from an environment variable
@@ -39,8 +38,11 @@ app.config.update(dict(
 ))
 app.config.from_envvar('VUEPOINT_SETTINGS', silent=True)
 
+Base  = declarative_base()
+Base.metadata.create_all(engine)
+ma = Marshmallow(app)
+
 def connect_db():
-    """Connects to the specific database."""
     rv = sqlite3.connect(app.config['DATABASE'])
     rv.row_factory = sqlite3.Row
     return rv
@@ -53,27 +55,18 @@ def init_db():
 
 @app.cli.command('initdb')
 def initdb_command():
-    """Initializes the database."""
     init_db()
     print('Initialized the database.')
 
 def get_db():
-    """Opens a new database connection if there is none yet for the
-    current application context.
-    """
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = connect_db()
     return g.sqlite_db
 
 @app.teardown_appcontext
 def close_db(error):
-    """Closes the database again at the end of the request."""
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
-
-Base  = declarative_base()
-Base.metadata.create_all(engine)
-ma = Marshmallow(app)
 
 class Task(Base):
     __tablename__ = 'tasks'
