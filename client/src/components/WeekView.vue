@@ -1,6 +1,14 @@
 <template>
     <!-- Tasks table  -->
-    <b-container fluid class="week-view">
+    <b-container fluid>
+
+      <b-row class="justify-content-center flag-btn">
+      <b-button @click="toggleWeek('last')" variant="outline-secondary" size="sm">&laquo;</b-button>
+      <b-button @click="toggleWeek('current')" variant="outline-secondary" size="sm">
+        Current Week</b-button>
+      <b-button @click="toggleWeek('next')" variant="outline-secondary" size="sm">&raquo;</b-button>
+      </b-row>
+
       <b-row class="day-container">
         <b-col class="weekday" v-for="day in weekdays" :key="day">
           <div class="weekday-header">
@@ -26,7 +34,7 @@
         </b-col>
       </b-row>
 
-      <b-modal v-model="showDetailModal" title="Task Detail" hide-footer>
+      <b-modal v-model="showDetailModal" hide-footer>
         <div class="modal-body">
           <h4>{{ taskDetail.title }}</h4>
           <p>Due on {{ taskDetail.dueDate }}
@@ -110,6 +118,8 @@ export default {
       showDetailModal: false,
       showEditModal: false,
       weekdays: [],
+      nextWeek: false,
+      lastWeek: false,
       showAllTasks: true,
       showWorkTasks: false,
       showPersonalTasks: false,
@@ -186,9 +196,38 @@ export default {
       }
     },
 
+    toggleWeek(week) {
+      if (week === 'next') {
+        this.nextWeek = !this.nextWeek;
+      } else if (week === 'last') {
+        this.lastWeek = !this.lastWeek;
+      } else if (week === 'current') {
+        this.lastWeek = false;
+        this.nextWeek = false;
+      }
+      return this.getThisWeekDates();
+    },
+
+    clearArray() {
+      for (let i = this.weekdays.length; i > 0; i -= 1) {
+        this.weekdays.pop();
+      }
+    },
+
     getThisWeekDates() {
-      for (let i = 1; i <= 7; i += 1) {
-        this.weekdays.push(moment().day(i).format('YYYY-MM-DD'));
+      this.clearArray();
+      if (this.nextWeek) {
+        for (let i = 1; i <= 7; i += 1) {
+          this.weekdays.push(moment().add(1, 'week').day(i).format('YYYY-MM-DD'));
+        }
+      } else if (this.lastWeek) {
+        for (let i = 1; i <= 7; i += 1) {
+          this.weekdays.push(moment().subtract(1, 'week').day(i).format('YYYY-MM-DD'));
+        }
+      } else {
+        for (let i = 1; i <= 7; i += 1) {
+          this.weekdays.push(moment().day(i).format('YYYY-MM-DD'));
+        }
       }
       return this.weekdays;
     },
@@ -271,28 +310,27 @@ export default {
 </script>
 
 <style scoped>
-.day-container{
-  width: 95vw;
-}
-
 .day-container, .flag-btn {
     margin-top: 1em;
   }
 
-.flag-btn {
-  margin-left: 35vw;
+.flag {
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
 }
 
 .weekday {
   font-size: 0.9rem;
   border-radius: 5px;
-  margin: 5px;
-  padding: 10px 5px;
+  margin: 5px 0px 5px 0px;
+  padding: 5px;
   text-align: center;
 }
 
 .weekday-header {
-  height: 30px;
+  padding: 3px;
+  background: #f6f6f6;
+  border-radius: 5px;
 }
 
 h2 {
@@ -322,7 +360,7 @@ box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
   font-size: 1em;
   color: black;
   word-wrap: break-word;
-  padding: 0.4em;
+  padding: 0.6em;
   position: relative;
 }
 
@@ -371,9 +409,5 @@ h3 {
 
 h4 {
   font-size: 1.5em;
-}
-
-.flag {
-  margin-left: 0.5em;
 }
 </style>

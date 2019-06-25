@@ -2,7 +2,7 @@
  <div class="completed_tasks_view">
       <b-list-group v-for="task in completedTasks()" :key="task.id">
         <div class="text-left">
-          <b-list-group-item variant="secondary">Task:
+          <b-list-group-item variant="success">#{{task.id}}
             <em v-b-popover.hover.right="task.taskDescription" title="Details">{{task.title}}</em>
             <input checked type="checkbox" v-on:change="$emit('incompl-task', task)">
             </b-list-group-item>
@@ -28,7 +28,4 @@ export default {
 </script>
 
 <style scoped>
-.completed_tasks_view {
-  width: 95vw;
-}
 </style>

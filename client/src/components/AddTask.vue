@@ -115,10 +115,6 @@ export default {
 </script>
 
 <style>
-.add-btn {
-  margin-left: 35vw;
-}
-
 #task-modal {
     text-align: center;
 }

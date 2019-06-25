@@ -4,19 +4,20 @@
       <add-task v-on:add-task="addTask"></add-task>
       <week-view :taskList="taskList" v-on:del-task="deleteTask"
       v-on:compl-task="markTaskAsDone" v-on:edit-task="editTask"></week-view>
-      </b-row>
-    <b-row class="completed">
+    </b-row>
+
+    <b-row>
       <b-col>
-        <p>COMPLETED TASKS</p>
+        <h3>Completed Tasks</h3>
         <completed-tasks :taskList="taskList" v-on:incompl-task="editTask">
         </completed-tasks>
       </b-col>
     </b-row>
-    <b-row class="history">
+
+    <b-row>
       <b-col>
         <h3>History</h3>
-        <task-history :taskList="taskList">
-        </task-history>
+        <task-history :taskList="taskList"></task-history>
       </b-col>
     </b-row>
 
@@ -123,16 +124,7 @@ export default {
 </script>
 
 <style scoped>
-#home{
-  margin: 0px;
-  width: 100vw;
-}
-
 .row {
   margin: 2em 0;
-}
-
-.completed {
-  text-align: center;
 }
 </style>

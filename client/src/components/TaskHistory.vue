@@ -1,11 +1,9 @@
 <template>
- <div class="task_history_view">
+ <div>
       <b-list-group v-for="task in getTaskHistory()" :key="task.id">
         <div class="text-left">
-          <b-list-group-item variant="secondary">Task:
+          <b-list-group-item variant="secondary"> #{{task.id}}:
             <em v-b-popover.hover.right="task.taskDescription" title="Details">{{task.title}}</em>
-            <input v-if="task.taskState == 1" checked type="checkbox" disabled>
-            <input v-else type="checkbox" disabled>
             </b-list-group-item>
         </div>
       </b-list-group>
@@ -33,7 +31,4 @@ export default {
 </script>
 
 <style scoped>
-.task_history_view {
-  width: 95vw;
-}
 </style>
