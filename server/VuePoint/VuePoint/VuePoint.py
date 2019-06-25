@@ -140,10 +140,7 @@ def updateTask(taskId):
 
 def updateTaskStatus(taskId): 
     currentTask = getTaskBy(taskId)
-    if currentTask.taskState == 0:
-        currentTask.taskState = 1
-    else:
-        currentTask.taskState = 0
+    currentTask.taskState = 1
     session.commit()
 
 @app.route('/ping', methods=['GET'])
