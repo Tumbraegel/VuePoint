@@ -9,16 +9,19 @@
 
           <ul class="tasks">
             <li class="task" v-for="task in getCorrectTaskboard(day)" :key="task.id">
-            <b-button class="close" aria-label="Close" v-on:click="$emit('del-task', task.id)">
-              <span aria-hidden="true">&times;</span>
-            </b-button>
-            <h3 v-on:click="showDetail(task)">{{ task.title }}</h3>
-            <div class="descr" v-on:click="showDetail(task)">
-              {{ task.taskDescription }}
-            </div>
-            <input type="checkbox" name="complete_checkbox"
-            v-on:change="markDone(task.id)">
-          </li>
+              <b-button class="close" aria-label="Close" v-on:click="$emit('del-task', task.id)">
+                <span aria-hidden="true">&times;</span>
+              </b-button>
+              <h3 v-on:click="showDetail(task)">{{ task.title }}</h3>
+              <div class="descr" v-on:click="showDetail(task)">
+                {{ task.taskDescription }}
+              </div>
+              <div class="flag">
+                {{ task.flag }}
+              </div>
+              <input type="checkbox" name="complete_checkbox"
+              v-on:change="markDone(task.id)">
+            </li>
           </ul>
         </b-col>
       </b-row>
@@ -345,6 +348,10 @@ h3 {
 
 .descr {
   margin: 0
+}
+
+.flag{
+  background-color: yellow;
 }
 
 .flag-btn button {
