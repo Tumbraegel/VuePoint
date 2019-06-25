@@ -161,7 +161,7 @@ export default {
       this.editTaskForm.title = taskDetail.title;
       this.editTaskForm.dueDate = taskDetail.dueDate;
       this.editTaskForm.taskDescription = taskDetail.taskDescription;
-      this.editTaskForm.flag = taskDetail.taskDescription;
+      this.editTaskForm.flag = taskDetail.flag;
     },
 
     onSubmit(evt) {
@@ -179,7 +179,6 @@ export default {
         };
         this.$emit('edit-task', payload);
         this.error = '';
-        this.initForm();
         this.showEditModal = false;
       }
     },

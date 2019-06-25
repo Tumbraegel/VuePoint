@@ -80,9 +80,7 @@ export default {
     editTask(payload) {
       const id = payload.id;
       const pathDel = `http://localhost:5000/list/${id}`;
-      axios.delete(pathDel, id);
-      const pathAdd = 'http://localhost:5000/list';
-      axios.post(pathAdd, payload)
+      axios.post(pathDel, payload)
         .then(() => {
           this.getAllTasks();
           sweetalert('Done!', 'Task updated!', 'success', { buttons: false, timer: 1500 });
