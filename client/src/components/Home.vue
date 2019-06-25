@@ -12,6 +12,13 @@
         </completed-tasks>
       </b-col>
     </b-row>
+    <b-row class="history">
+      <b-col>
+        <h3>History</h3>
+        <task-history :taskList="taskList">
+        </task-history>
+      </b-col>
+    </b-row>
 
   </b-container>
 </template>
@@ -22,6 +29,7 @@ import sweetalert from 'sweetalert';
 import WeekView from './WeekView';
 import CompletedTasks from './CompletedTasks';
 import AddTask from './AddTask';
+import TaskHistory from './TaskHistory';
 
 export default {
   name: 'Home',
@@ -29,6 +37,7 @@ export default {
     'completed-tasks': CompletedTasks,
     'week-view': WeekView,
     'add-task': AddTask,
+    'task-history': TaskHistory,
   },
   data() {
     return {
