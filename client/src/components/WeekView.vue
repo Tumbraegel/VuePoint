@@ -20,7 +20,7 @@
                 {{ task.flag }}
               </div>
               <input type="checkbox" name="complete_checkbox"
-              v-on:change="markDone(task.id)">
+              v-on:change="markDone(task.id)" class="weekview_checkbox">
             </li>
           </ul>
         </b-col>
@@ -82,16 +82,16 @@
       </b-modal>
 
       <b-row class="justify-content-center flag-btn">
-         <b-button variant="outline-warning" size="sm"
+         <b-button class="flag"
          :class="{ active: showWorkTasks }"
          @click="setCategory('work')">Work</b-button>
-        <b-button variant="outline-warning" size="sm"
+        <b-button class="flag"
         :class="{ active: showStudyTasks }"
         @click="setCategory('studies')">Studies</b-button>
-        <b-button variant="outline-warning" size="sm"
+        <b-button class="flag"
         :class="{ active: showPersonalTasks }"
         @click="setCategory('personal')">Personal</b-button>
-        <b-button v-if="!showAllTasks" variant="outline-warning" size="sm"
+        <b-button v-if="!showAllTasks" class="flag"
         :class="{ active: showAllTasks }"
         @click="setCategory('all')">All</b-button>
       </b-row>
@@ -271,18 +271,24 @@ export default {
 </script>
 
 <style scoped>
+.day-container{
+  width: 95vw;
+}
+
 .day-container, .flag-btn {
     margin-top: 1em;
   }
 
+.flag-btn {
+  margin-left: 35vw;
+}
+
 .weekday {
   font-size: 0.9rem;
-  background-color: seagreen;
   border-radius: 5px;
   margin: 5px;
   padding: 10px 5px;
   text-align: center;
-  color: white;
 }
 
 .weekday-header {
@@ -302,13 +308,15 @@ h2 {
 }
 
 .task:hover, task:focus, task:active{
-color: seagreen;
+color: gray;
 cursor: pointer;
 box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
 }
 
 .task {
-  background-color: white;
+  border-style: solid;
+  border-width: medium;
+  border-color: lightgray;
   border-radius: 5px;
   margin: 10px 5px;
   font-size: 1em;
@@ -319,26 +327,19 @@ box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
 }
 
 .close {
-  background-color: lightgray;
   width: 16px;
   height: 16px;
   font-size: 1rem;
   border-radius: 50%;
-  color: white;
-  top: -5px;
-  right: -5px;
+  color: gray;
+  top: 1px;
+  right: -1px;
   opacity: 1;
   font-weight: 400;
   line-height: 0.5;
   padding-bottom: 5px;
-  text-shadow: 1px 1px 2px grey;
   position: absolute;
 }
-
-.checkbox {
-  margin-left: 5px;
-}
-
 
 h3 {
   margin-top: 0.1em;
@@ -351,7 +352,12 @@ h3 {
 }
 
 .flag{
-  background-color: yellow;
+  border-style: solid;
+  border-width: thin;
+  border-color: seagreen;
+  border-radius: 5px;
+  color: seagreen;
+  background-color: white;
 }
 
 .flag-btn button {

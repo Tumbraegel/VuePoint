@@ -25,6 +25,10 @@ export default {
 </script>
 
 <style scoped>
+#app {
+  width: 100vw;
+}
+
 * {
   box-sizing: border-box;
 }

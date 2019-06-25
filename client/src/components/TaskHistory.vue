@@ -1,5 +1,5 @@
 <template>
- <div>
+ <div class="task_history_view">
       <b-list-group v-for="task in getTaskHistory()" :key="task.id">
         <div class="text-left">
           <b-list-group-item variant="secondary">Task:
@@ -33,4 +33,7 @@ export default {
 </script>
 
 <style scoped>
+.task_history_view {
+  width: 95vw;
+}
 </style>

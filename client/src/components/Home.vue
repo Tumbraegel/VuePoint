@@ -123,6 +123,11 @@ export default {
 </script>
 
 <style scoped>
+#home{
+  margin: 0px;
+  width: 100vw;
+}
+
 .row {
   margin: 2em 0;
 }

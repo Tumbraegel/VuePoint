@@ -1,5 +1,5 @@
 <template>
- <div>
+ <div class="completed_tasks_view">
       <b-list-group v-for="task in completedTasks()" :key="task.id">
         <div class="text-left">
           <b-list-group-item variant="secondary">Task:
@@ -28,4 +28,7 @@ export default {
 </script>
 
 <style scoped>
+.completed_tasks_view {
+  width: 95vw;
+}
 </style>
