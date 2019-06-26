@@ -3,12 +3,12 @@
     <b-container fluid>
 
       <b-row class="justify-content-center flag-btn">
-      <b-button @click="toggleWeek('last', $event)" variant="outline-secondary" size="sm"
-      >&laquo; Last</b-button>
-      <b-button @click="toggleWeek('current')" variant="outline-secondary" size="sm">
-        Current Week</b-button>
-      <b-button @click="toggleWeek('next', $event)" variant="outline-secondary" size="sm"
-      >Next &raquo;</b-button>
+      <b-col><b-button @click="toggleWeek('last', $event)" block variant="outline-secondary"
+      size="sm">&laquo; Last</b-button></b-col>
+      <b-col><b-button @click="toggleWeek('current')" block variant="outline-secondary"
+      size="sm">Current Week</b-button></b-col>
+      <b-col><b-button @click="toggleWeek('next', $event)" block variant="outline-secondary"
+      size="sm">Next &raquo;</b-button></b-col>
       </b-row>
 
       <b-row class="day-container">
