@@ -14,7 +14,6 @@
           <div class="weekday-header">
             <h2>{{ day }}</h2>
           </div>
-
           <ul class="tasks">
             <li class="task" v-for="task in getCorrectTaskboard(day)" :key="task.id">
               <b-button class="close" aria-label="Close" v-on:click="$emit('del-task', task.id)">

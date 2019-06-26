@@ -6,18 +6,40 @@
       v-on:compl-task="markTaskAsDone" v-on:edit-task="editTask"></week-view>
     </b-row>
 
-    <b-row>
+    <b-row class="justify-content-center">
       <b-col>
-        <h3>Completed Tasks</h3>
-        <completed-tasks :taskList="taskList" v-on:incompl-task="editTask">
-        </completed-tasks>
-      </b-col>
-    </b-row>
+      <div role="tablist">
+        <b-card no-body class="mb-1">
+          <b-card-header header-tag="header" class="p-1" role="tab">
+            <b-button class="acc-btn" block href="#" v-b-toggle.accordion-1
+            variant="light">
+              Completed Tasks
+            </b-button>
+          </b-card-header>
+          <b-collapse id="accordion-1" accordion="my-accordion" role="tabpanel">
+            <b-card-body>
+              <b-card-text>
+                <completed-tasks :taskList="taskList" v-on:incompl-task="editTask">
+                </completed-tasks>
+              </b-card-text>
+            </b-card-body>
+          </b-collapse>
+        </b-card>
 
-    <b-row>
-      <b-col>
-        <h3>History</h3>
-        <task-history :taskList="taskList"></task-history>
+        <b-card no-body class="mb-1">
+          <b-card-header header-tag="header" class="p-1" role="tab">
+            <b-button class="acc-btn" block href="#" v-b-toggle.accordion-2
+            variant="light">
+              History of all Tasks
+            </b-button>
+          </b-card-header>
+          <b-collapse id="accordion-2" accordion="my-accordion" role="tabpanel">
+            <b-card-body>
+              <task-history :taskList="taskList"></task-history>
+            </b-card-body>
+          </b-collapse>
+        </b-card>
+      </div>
       </b-col>
     </b-row>
 
@@ -124,6 +146,16 @@ export default {
 </script>
 
 <style scoped>
+.acc-btn, .acc-btn:active, acc-btn:focus {
+  outline: none !important;
+  box-shadow: none;
+}
+
+.p-1 {
+    background-color: transparent;
+    letter-spacing: 1px;
+}
+
 .row {
   margin: 2em 0;
 }
