@@ -3,10 +3,12 @@
     <b-container fluid>
 
       <b-row class="justify-content-center flag-btn">
-      <b-button @click="toggleWeek('last')" variant="outline-secondary" size="sm">&laquo;</b-button>
+      <b-button @click="toggleWeek('last', $event)" variant="outline-secondary" size="sm"
+      >&laquo; Last</b-button>
       <b-button @click="toggleWeek('current')" variant="outline-secondary" size="sm">
         Current Week</b-button>
-      <b-button @click="toggleWeek('next')" variant="outline-secondary" size="sm">&raquo;</b-button>
+      <b-button @click="toggleWeek('next', $event)" variant="outline-secondary" size="sm"
+      >Next &raquo;</b-button>
       </b-row>
 
       <b-row class="day-container">
@@ -119,6 +121,7 @@ export default {
       weekdays: [],
       nextWeek: false,
       lastWeek: false,
+      enableDisable: false,
       showAllTasks: true,
       showWorkTasks: false,
       showPersonalTasks: false,
@@ -197,9 +200,11 @@ export default {
 
     toggleWeek(week) {
       if (week === 'next') {
-        this.nextWeek = !this.nextWeek;
+        this.nextWeek = true;
+        this.lastWeek = false;
       } else if (week === 'last') {
-        this.lastWeek = !this.lastWeek;
+        this.lastWeek = true;
+        this.nextWeek = false;
       } else if (week === 'current') {
         this.lastWeek = false;
         this.nextWeek = false;
